@@ -8,6 +8,7 @@ import org.mapstruct.factory.Mappers;
 import net.coatli.reference.portsandadapters.application.port.out.persistence.PaymentPersistencePortOut;
 import net.coatli.reference.portsandadapters.domain.model.Payment;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -33,24 +34,28 @@ class PaymentDeleterTest {
   }
 
   @Test
-  void execute_whenNullInput_shouldThrow() {
+  @DisplayName("Caso 01: Fallo - Given input nulo, When execute, Then lanza PaymentInputException")
+  void case01() {
     assertThrows(PaymentInputException.class, () -> paymentDeleter.execute(null));
   }
 
   @Test
-  void execute_whenNullPaymentReference_shouldThrow() {
+  @DisplayName("Caso 02: Fallo - Given 'paymentReference' nulo, When execute, Then lanza PaymentInputException")
+  void case02() {
     assertThrows(PaymentInputException.class,
       () -> paymentDeleter.execute(new DeletePaymentInput(null)));
   }
 
   @Test
-  void execute_whenBlankPaymentReference_shouldThrow() {
+  @DisplayName("Caso 03: Fallo - Given 'paymentReference' en blanco, When execute, Then lanza PaymentInputException")
+  void case03() {
     assertThrows(PaymentInputException.class,
       () -> paymentDeleter.execute(new DeletePaymentInput("   ")));
   }
 
   @Test
-  void execute_whenPaymentNotFound_shouldThrow() {
+  @DisplayName("Caso 04: Fallo - Given pago no encontrado, When execute, Then lanza PaymentNotFoundException")
+  void case04() {
     when(paymentPersistencePortOut.findByPaymentReference("ref-1"))
       .thenReturn(Optional.empty());
     assertThrows(PaymentNotFoundException.class,
@@ -58,7 +63,8 @@ class PaymentDeleterTest {
   }
 
   @Test
-  void execute_whenPersistenceDeleteReturnsEmpty_shouldThrow() {
+  @DisplayName("Caso 05: Fallo - Given persistencia retorna vacío en delete, When execute, Then lanza IllegalStateException")
+  void case05() {
     var payment = new Payment().setPaymentReference("ref-1");
     when(paymentPersistencePortOut.findByPaymentReference("ref-1"))
       .thenReturn(Optional.of(payment));
@@ -68,7 +74,8 @@ class PaymentDeleterTest {
   }
 
   @Test
-  void execute_whenValidReference_shouldReturnOutput() {
+  @DisplayName("Caso 06: Éxito - Given referencia válida y pago existente, When execute, Then retorna output")
+  void case06() {
     var payment = new Payment().setPaymentReference("ref-1");
     when(paymentPersistencePortOut.findByPaymentReference("ref-1"))
       .thenReturn(Optional.of(payment));

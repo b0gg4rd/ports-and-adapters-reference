@@ -8,6 +8,7 @@ import net.coatli.reference.portsandadapters.application.port.out.persistence.Pa
 import net.coatli.reference.portsandadapters.domain.enums.PaymentStatus;
 import net.coatli.reference.portsandadapters.domain.model.Payment;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -35,68 +36,78 @@ class PaymentCreatorTest {
   }
 
   @Test
-  void execute_whenNullInput_shouldThrow() {
+  @DisplayName("Caso 01: Fallo - Given input nulo, When execute, Then lanza PaymentInputException")
+  void case01() {
     assertThrows(PaymentInputException.class, () -> paymentCreator.execute(null));
   }
 
   @Test
-  void execute_whenNullPayerReference_shouldThrow() {
+  @DisplayName("Caso 02: Fallo - Given 'payerReference' nulo, When execute, Then lanza PaymentInputException")
+  void case02() {
     var input = new CreatePaymentInput(null, "payee-1", new BigDecimal("100.00"), "subject",
       LocalDateTime.now().plusDays(1));
     assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
   @Test
-  void execute_whenBlankPayerReference_shouldThrow() {
+  @DisplayName("Caso 03: Fallo - Given 'payerReference' en blanco, When execute, Then lanza PaymentInputException")
+  void case03() {
     var input = new CreatePaymentInput("   ", "payee-1", new BigDecimal("100.00"), "subject",
       LocalDateTime.now().plusDays(1));
     assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
   @Test
-  void execute_whenNullPayeeReference_shouldThrow() {
+  @DisplayName("Caso 04: Fallo - Given 'payeeReference' nulo, When execute, Then lanza PaymentInputException")
+  void case04() {
     var input = new CreatePaymentInput("payer-1", null, new BigDecimal("100.00"), "subject",
       LocalDateTime.now().plusDays(1));
     assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
   @Test
-  void execute_whenBlankPayeeReference_shouldThrow() {
+  @DisplayName("Caso 05: Fallo - Given 'payeeReference' en blanco, When execute, Then lanza PaymentInputException")
+  void case05() {
     var input = new CreatePaymentInput("payer-1", "   ", new BigDecimal("100.00"), "subject",
       LocalDateTime.now().plusDays(1));
     assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
   @Test
-  void execute_whenNullPaymentAmount_shouldThrow() {
+  @DisplayName("Caso 06: Fallo - Given 'paymentAmount' nulo, When execute, Then lanza PaymentInputException")
+  void case06() {
     var input = new CreatePaymentInput("payer-1", "payee-1", null, "subject",
       LocalDateTime.now().plusDays(1));
     assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
   @Test
-  void execute_whenZeroPaymentAmount_shouldThrow() {
+  @DisplayName("Caso 07: Fallo - Given 'paymentAmount' en cero, When execute, Then lanza PaymentInputException")
+  void case07() {
     var input = new CreatePaymentInput("payer-1", "payee-1", BigDecimal.ZERO, "subject",
       LocalDateTime.now().plusDays(1));
     assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
   @Test
-  void execute_whenNegativePaymentAmount_shouldThrow() {
+  @DisplayName("Caso 08: Fallo - Given 'paymentAmount' negativo, When execute, Then lanza PaymentInputException")
+  void case08() {
     var input = new CreatePaymentInput("payer-1", "payee-1", new BigDecimal("-50.00"), "subject",
       LocalDateTime.now().plusDays(1));
     assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
   @Test
-  void execute_whenPastExecutionDate_shouldThrow() {
+  @DisplayName("Caso 09: Fallo - Given 'executionDate' en el pasado, When execute, Then lanza PaymentInputException")
+  void case09() {
     var input = new CreatePaymentInput("payer-1", "payee-1", new BigDecimal("100.00"), "subject",
       LocalDateTime.now().minusDays(1));
     assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
   @Test
-  void execute_whenNullExecutionDate_shouldEnrichWithNowAndReturnOutput() {
+  @DisplayName("Caso 10: Éxito - Given 'executionDate' nulo, When execute, Then enriquece con fecha actual y retorna output")
+  void case10() {
     var input = new CreatePaymentInput("payer-1", "payee-1", new BigDecimal("100.00"), "subject", null);
     var captor = ArgumentCaptor.forClass(Payment.class);
 
@@ -112,7 +123,8 @@ class PaymentCreatorTest {
   }
 
   @Test
-  void execute_whenFutureExecutionDate_shouldPreserveExecutionDateAndReturnOutput() {
+  @DisplayName("Caso 11: Éxito - Given 'executionDate' futuro, When execute, Then preserva la fecha y retorna output")
+  void case11() {
     var futureDate = LocalDateTime.now().plusDays(1);
     var input = new CreatePaymentInput("payer-1", "payee-1", new BigDecimal("100.00"), "subject",
       futureDate);

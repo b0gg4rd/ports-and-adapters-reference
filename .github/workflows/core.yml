@@ -109,6 +109,8 @@ jobs:
           cache: maven
 
       - name: Deploy
-        run: ./mvnw -B -Djansi.force=true -ntp -U clean deploy
+        run: |
+          chmod +x mvnw
+          ./mvnw -B -Djansi.force=true -ntp -U clean deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

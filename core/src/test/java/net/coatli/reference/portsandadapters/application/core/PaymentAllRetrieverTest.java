@@ -6,6 +6,7 @@ import net.coatli.reference.portsandadapters.application.port.out.persistence.Pa
 import net.coatli.reference.portsandadapters.domain.model.Page;
 import net.coatli.reference.portsandadapters.domain.model.Payment;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -34,7 +35,8 @@ class PaymentAllRetrieverTest {
   }
 
   @Test
-  void execute_whenPaymentsExist_shouldReturnPagedPayments() {
+  @DisplayName("Caso 01: Éxito - Given pagos existentes, When execute, Then retorna página con pagos")
+  void case01() {
     var payment = new Payment().setPaymentReference("ref-1");
     var pagedResult = new Page<Payment>()
       .setContent(List.of(payment))
@@ -53,7 +55,8 @@ class PaymentAllRetrieverTest {
   }
 
   @Test
-  void execute_whenNoPayments_shouldReturnEmptyContent() {
+  @DisplayName("Caso 02: Éxito - Given sin pagos registrados, When execute, Then retorna página vacía")
+  void case02() {
     var pagedResult = new Page<Payment>()
       .setContent(List.of())
       .setTotalElements(0L)
@@ -67,7 +70,8 @@ class PaymentAllRetrieverTest {
   }
 
   @Test
-  void execute_whenNullInput_shouldThrow() {
+  @DisplayName("Caso 03: Fallo - Given input nulo, When execute, Then lanza NoSuchElementException")
+  void case03() {
     Assertions.assertThrows(NoSuchElementException.class, () -> paymentAllRetriever.execute(null));
   }
 
