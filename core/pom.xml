@@ -13,6 +13,19 @@
   <name>ports-and-adapters-reference-core</name>
   <description>Ports And Adapters Reference - Core</description>
 
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/b0gg4rd/ports-and-adapters-reference</url>
+    </repository>
+    <snapshotRepository>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/b0gg4rd/ports-and-adapters-reference</url>
+    </snapshotRepository>
+  </distributionManagement>
+
   <properties>
     <java.version>25</java.version>
     <maven>3.9.14</maven>
@@ -144,7 +157,7 @@
         <version>${jacoco.maven.plugin.version}</version>
         <configuration>
           <includes>
-            <include>net/coatli/reference/hexagonal/application/core/**</include>
+            <include>net/coatli/reference/portsandadapters/application/core/**</include>
           </includes>
         </configuration>
         <executions>
