@@ -36,6 +36,9 @@
     <lombok.maven.plugin>1.18.44</lombok.maven.plugin>
     <maven.compiler.plugin.version>3.15.0</maven.compiler.plugin.version>
     <maven.surefire.plugin.version>3.5.5</maven.surefire.plugin.version>
+    <jacoco.maven.plugin.version>0.8.14</jacoco.maven.plugin.version>
+
+    <slf4j.api.version>2.0.17</slf4j.api.version>
 
     <lombok.version>1.18.44</lombok.version>
     <mapstruct.version>1.6.3</mapstruct.version>
@@ -43,7 +46,6 @@
 
     <junit.jupiter.version>5.11.4</junit.jupiter.version>
     <mockito.version>5.14.2</mockito.version>
-    <jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
   </properties>
 
   <dependencies>
