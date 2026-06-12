@@ -5,7 +5,9 @@ import net.coatli.reference.portsandadapters.application.port.in.exception.Payme
 import net.coatli.reference.portsandadapters.application.port.in.model.CreatePaymentInput;
 import net.coatli.reference.portsandadapters.application.port.in.model.CreatePaymentOutput;
 import net.coatli.reference.portsandadapters.application.port.in.model.mapper.CreatePaymentPortInMapper;
+import net.coatli.reference.portsandadapters.application.port.out.logging.LoggingPortOut;
 import net.coatli.reference.portsandadapters.application.port.out.persistence.PaymentPersistencePortOut;
+import net.coatli.reference.portsandadapters.application.port.out.transformation.JsonTransformationPortOut;
 import net.coatli.reference.portsandadapters.domain.enums.PaymentStatus;
 import net.coatli.reference.portsandadapters.domain.model.Payment;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +20,18 @@ import java.util.function.Predicate;
 @RequiredArgsConstructor
 public class PaymentCreator implements CreatePaymentPortIn {
 
+  private final LoggingPortOut loggingPortOut;
+  private final JsonTransformationPortOut jsonTransformationPortOut;
   private final CreatePaymentPortInMapper createPaymentPortInMapper;
-
   private final PaymentPersistencePortOut paymentPersistencePortOut;
 
   @Override
   public CreatePaymentOutput execute(final CreatePaymentInput createPaymentInput) {
+
+    loggingPortOut.info(
+      this.getClass(),
+      "[core.payment.create] input: '{}'",
+      jsonTransformationPortOut.toJson(createPaymentInput));
 
     return Optional
       .of(isNullCreatePaymentInput(createPaymentInput))

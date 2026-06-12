@@ -6,7 +6,9 @@ import net.coatli.reference.portsandadapters.application.port.in.exception.Payme
 import net.coatli.reference.portsandadapters.application.port.in.model.DeletePaymentInput;
 import net.coatli.reference.portsandadapters.application.port.in.model.DeletePaymentOutput;
 import net.coatli.reference.portsandadapters.application.port.in.model.mapper.DeletePaymentPortInMapper;
+import net.coatli.reference.portsandadapters.application.port.out.logging.LoggingPortOut;
 import net.coatli.reference.portsandadapters.application.port.out.persistence.PaymentPersistencePortOut;
+import net.coatli.reference.portsandadapters.application.port.out.transformation.JsonTransformationPortOut;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
@@ -15,12 +17,18 @@ import java.util.function.Predicate;
 @RequiredArgsConstructor
 public class PaymentDeleter implements DeletePaymentPortIn {
 
+  private final LoggingPortOut loggingPortOut;
+  private final JsonTransformationPortOut jsonTransformationPortOut;
   private final DeletePaymentPortInMapper deletePaymentPortInMapper;
-
   private final PaymentPersistencePortOut paymentPersistencePortOut;
 
   @Override
   public DeletePaymentOutput execute(final DeletePaymentInput deletePaymentInput) {
+
+    loggingPortOut.info(
+      this.getClass(),
+      "[core.payment.delete] input: '{}'",
+      jsonTransformationPortOut.toJson(deletePaymentInput));
 
     return Optional
       .of(isNullDeletePaymentInput(deletePaymentInput))

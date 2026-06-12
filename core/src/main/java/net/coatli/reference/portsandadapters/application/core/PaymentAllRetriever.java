@@ -4,7 +4,9 @@ import net.coatli.reference.portsandadapters.application.port.in.RetrieveAllPaym
 import net.coatli.reference.portsandadapters.application.port.in.model.RetrieveAllPaymentsInput;
 import net.coatli.reference.portsandadapters.application.port.in.model.RetrieveAllPaymentsOutput;
 import net.coatli.reference.portsandadapters.application.port.in.model.mapper.RetrieveAllPaymentsPortInMapper;
+import net.coatli.reference.portsandadapters.application.port.out.logging.LoggingPortOut;
 import net.coatli.reference.portsandadapters.application.port.out.persistence.PaymentPersistencePortOut;
+import net.coatli.reference.portsandadapters.application.port.out.transformation.JsonTransformationPortOut;
 import net.coatli.reference.portsandadapters.domain.model.Page;
 import net.coatli.reference.portsandadapters.domain.model.Pagination;
 import net.coatli.reference.portsandadapters.domain.model.Payment;
@@ -16,12 +18,18 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class PaymentAllRetriever implements RetrieveAllPaymentsPortIn {
 
+  private final LoggingPortOut loggingPortOut;
+  private final JsonTransformationPortOut jsonTransformationPortOut;
   private final RetrieveAllPaymentsPortInMapper retrieveAllPaymentsPortInMapper;
-
   private final PaymentPersistencePortOut paymentPersistencePortOut;
 
   @Override
   public RetrieveAllPaymentsOutput execute(final RetrieveAllPaymentsInput retrieveAllPaymentsInput) {
+
+    loggingPortOut.info(
+      this.getClass(),
+      "[core.payment.retrieve] input: '{}'",
+      jsonTransformationPortOut.toJson(retrieveAllPaymentsInput));
 
     return Optional
       .ofNullable(retrieveAllPaymentsInput)
