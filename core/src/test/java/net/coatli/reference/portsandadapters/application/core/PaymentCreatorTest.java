@@ -3,27 +3,34 @@ package net.coatli.reference.portsandadapters.application.core;
 import net.coatli.reference.portsandadapters.application.port.in.exception.PaymentInputException;
 import net.coatli.reference.portsandadapters.application.port.in.model.CreatePaymentInput;
 import net.coatli.reference.portsandadapters.application.port.in.model.mapper.CreatePaymentPortInMapper;
-import org.mapstruct.factory.Mappers;
+import net.coatli.reference.portsandadapters.application.port.out.logging.LoggingPortOut;
 import net.coatli.reference.portsandadapters.application.port.out.persistence.PaymentPersistencePortOut;
+import net.coatli.reference.portsandadapters.application.port.out.transformation.JsonTransformationPortOut;
 import net.coatli.reference.portsandadapters.domain.enums.PaymentStatus;
 import net.coatli.reference.portsandadapters.domain.model.Payment;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 class PaymentCreatorTest {
+
+  @Mock
+  private LoggingPortOut loggingPortOut;
+
+  @Mock
+  private JsonTransformationPortOut jsonTransformationPortOut;
 
   @Mock
   private PaymentPersistencePortOut paymentPersistencePortOut;
@@ -32,13 +39,16 @@ class PaymentCreatorTest {
 
   @BeforeEach
   void setUp() {
-    paymentCreator = new PaymentCreator(Mappers.getMapper(CreatePaymentPortInMapper.class), paymentPersistencePortOut);
+    Mockito.when(jsonTransformationPortOut.toJson(ArgumentMatchers.any())).thenReturn("{}");
+    paymentCreator = new PaymentCreator(
+      loggingPortOut, jsonTransformationPortOut,
+      Mappers.getMapper(CreatePaymentPortInMapper.class), paymentPersistencePortOut);
   }
 
   @Test
   @DisplayName("Caso 01: Fallo - Given input nulo, When execute, Then lanza PaymentInputException")
   void case01() {
-    assertThrows(PaymentInputException.class, () -> paymentCreator.execute(null));
+    Assertions.assertThrows(PaymentInputException.class, () -> paymentCreator.execute(null));
   }
 
   @Test
@@ -46,7 +56,7 @@ class PaymentCreatorTest {
   void case02() {
     var input = new CreatePaymentInput(null, "payee-1", new BigDecimal("100.00"), "subject",
       LocalDateTime.now().plusDays(1));
-    assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
+    Assertions.assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
   @Test
@@ -54,7 +64,7 @@ class PaymentCreatorTest {
   void case03() {
     var input = new CreatePaymentInput("   ", "payee-1", new BigDecimal("100.00"), "subject",
       LocalDateTime.now().plusDays(1));
-    assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
+    Assertions.assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
   @Test
@@ -62,7 +72,7 @@ class PaymentCreatorTest {
   void case04() {
     var input = new CreatePaymentInput("payer-1", null, new BigDecimal("100.00"), "subject",
       LocalDateTime.now().plusDays(1));
-    assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
+    Assertions.assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
   @Test
@@ -70,7 +80,7 @@ class PaymentCreatorTest {
   void case05() {
     var input = new CreatePaymentInput("payer-1", "   ", new BigDecimal("100.00"), "subject",
       LocalDateTime.now().plusDays(1));
-    assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
+    Assertions.assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
   @Test
@@ -78,7 +88,7 @@ class PaymentCreatorTest {
   void case06() {
     var input = new CreatePaymentInput("payer-1", "payee-1", null, "subject",
       LocalDateTime.now().plusDays(1));
-    assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
+    Assertions.assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
   @Test
@@ -86,7 +96,7 @@ class PaymentCreatorTest {
   void case07() {
     var input = new CreatePaymentInput("payer-1", "payee-1", BigDecimal.ZERO, "subject",
       LocalDateTime.now().plusDays(1));
-    assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
+    Assertions.assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
   @Test
@@ -94,7 +104,7 @@ class PaymentCreatorTest {
   void case08() {
     var input = new CreatePaymentInput("payer-1", "payee-1", new BigDecimal("-50.00"), "subject",
       LocalDateTime.now().plusDays(1));
-    assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
+    Assertions.assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
   @Test
@@ -102,7 +112,7 @@ class PaymentCreatorTest {
   void case09() {
     var input = new CreatePaymentInput("payer-1", "payee-1", new BigDecimal("100.00"), "subject",
       LocalDateTime.now().minusDays(1));
-    assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
+    Assertions.assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
   @Test
@@ -111,15 +121,15 @@ class PaymentCreatorTest {
     var input = new CreatePaymentInput("payer-1", "payee-1", new BigDecimal("100.00"), "subject", null);
     var captor = ArgumentCaptor.forClass(Payment.class);
 
-    when(paymentPersistencePortOut.create(captor.capture())).thenAnswer(inv -> inv.getArgument(0));
+    Mockito.when(paymentPersistencePortOut.create(captor.capture())).thenAnswer(inv -> inv.getArgument(0));
 
     var result = paymentCreator.execute(input);
 
-    assertNotNull(result.paymentReference());
+    Assertions.assertNotNull(result.paymentReference());
     var enriched = captor.getValue();
-    assertEquals(PaymentStatus.PENDING, enriched.getStatus());
-    assertNotNull(enriched.getExecutionDate());
-    assertNotNull(enriched.getCreatedAt());
+    Assertions.assertEquals(PaymentStatus.PENDING, enriched.getStatus());
+    Assertions.assertNotNull(enriched.getExecutionDate());
+    Assertions.assertNotNull(enriched.getCreatedAt());
   }
 
   @Test
@@ -130,12 +140,12 @@ class PaymentCreatorTest {
       futureDate);
     var captor = ArgumentCaptor.forClass(Payment.class);
 
-    when(paymentPersistencePortOut.create(captor.capture())).thenAnswer(inv -> inv.getArgument(0));
+    Mockito.when(paymentPersistencePortOut.create(captor.capture())).thenAnswer(inv -> inv.getArgument(0));
 
     var result = paymentCreator.execute(input);
 
-    assertNotNull(result.paymentReference());
-    assertEquals(futureDate, captor.getValue().getExecutionDate());
+    Assertions.assertNotNull(result.paymentReference());
+    Assertions.assertEquals(futureDate, captor.getValue().getExecutionDate());
   }
 
 }

@@ -2,7 +2,9 @@ package net.coatli.reference.portsandadapters.application.core;
 
 import net.coatli.reference.portsandadapters.application.port.in.model.RetrieveAllPaymentsInput;
 import net.coatli.reference.portsandadapters.application.port.in.model.mapper.RetrieveAllPaymentsPortInMapper;
+import net.coatli.reference.portsandadapters.application.port.out.logging.LoggingPortOut;
 import net.coatli.reference.portsandadapters.application.port.out.persistence.PaymentPersistencePortOut;
+import net.coatli.reference.portsandadapters.application.port.out.transformation.JsonTransformationPortOut;
 import net.coatli.reference.portsandadapters.domain.model.Page;
 import net.coatli.reference.portsandadapters.domain.model.Payment;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,13 +26,21 @@ import java.util.NoSuchElementException;
 class PaymentAllRetrieverTest {
 
   @Mock
+  private LoggingPortOut loggingPortOut;
+
+  @Mock
+  private JsonTransformationPortOut jsonTransformationPortOut;
+
+  @Mock
   private PaymentPersistencePortOut paymentPersistencePortOut;
 
   private PaymentAllRetriever paymentAllRetriever;
 
   @BeforeEach
   void setUp() {
+    Mockito.when(jsonTransformationPortOut.toJson(ArgumentMatchers.any())).thenReturn("{}");
     paymentAllRetriever = new PaymentAllRetriever(
+      loggingPortOut, jsonTransformationPortOut,
       Mappers.getMapper(RetrieveAllPaymentsPortInMapper.class), paymentPersistencePortOut);
   }
 
