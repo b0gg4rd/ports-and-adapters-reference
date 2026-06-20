@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 
 public record UpdatePaymentInput(
 
-  String payeeReference,
+  String paymentReference,
 
   BigDecimal paymentAmount,
 

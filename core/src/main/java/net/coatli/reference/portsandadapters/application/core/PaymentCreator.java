@@ -13,9 +13,7 @@ import net.coatli.reference.portsandadapters.domain.model.Payment;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Predicate;
 
 @RequiredArgsConstructor
 public class PaymentCreator implements CreatePaymentPortIn {
@@ -33,74 +31,46 @@ public class PaymentCreator implements CreatePaymentPortIn {
       "[core.payment.create] input: '{}'",
       jsonTransformationPortOut.toJson(createPaymentInput));
 
-    return Optional
-      .of(isNullCreatePaymentInput(createPaymentInput))
-      .filter(validatePayerReference())
-      .filter(validatePayeeReference())
-      .filter(validatePaymentAmount())
-      .filter(validateExecutionDate())
-      .map(createPaymentPortInMapper::mappingCreatePaymentInput2Payment)
-      .map(this::enrichPayment)
-      .map(paymentPersistencePortOut::create)
-      .map(createPaymentPortInMapper::mappingPayment2CreatePaymentOutput)
-      .orElseThrow(() -> new IllegalStateException("The persistence create method return 'null'"));
+    validateInput(createPaymentInput);
 
+    final var persisted = paymentPersistencePortOut.create(
+      enrichPayment(createPaymentPortInMapper.mappingCreatePaymentInput2Payment(createPaymentInput)));
+
+    if (null == persisted) {
+      throw new IllegalStateException("The persistence create method return 'null'");
+    }
+
+    return createPaymentPortInMapper.mappingPayment2CreatePaymentOutput(persisted);
   }
 
-  private CreatePaymentInput isNullCreatePaymentInput(CreatePaymentInput createPaymentInput) {
+  private void validateInput(final CreatePaymentInput createPaymentInput) {
 
-    return Optional
-      .ofNullable(createPaymentInput)
-      .orElseThrow(() -> new PaymentInputException("Illegal argument, the 'createPaymentInput' must not be 'null'."));
+    if (null == createPaymentInput) {
+      throw new PaymentInputException("Illegal argument, the 'createPaymentInput' must not be 'null'.");
+    }
 
+    if (null == createPaymentInput.payerReference() || createPaymentInput.payerReference().isBlank()) {
+      throw new PaymentInputException("The value for 'payerReference' is required.");
+    }
+
+    if (null == createPaymentInput.payeeReference() || createPaymentInput.payeeReference().isBlank()) {
+      throw new PaymentInputException("The value for 'paymentReference' is required.");
+    }
+
+    PaymentValidations.requirePositiveAmount(createPaymentInput.paymentAmount());
+    PaymentValidations.requireFutureOrAbsentDate(createPaymentInput.executionDate());
   }
 
-  private Predicate<CreatePaymentInput> validatePayerReference() {
+  private Payment enrichPayment(final Payment payment) {
 
-    return createPaymentInput -> Optional
-      .ofNullable(createPaymentInput.payerReference())
-      .filter(Predicate.not(String::isBlank))
-      .map(_ -> true)
-      .orElseThrow(() -> new PaymentInputException("The value for 'payerReference' is required."));
+    payment.setPaymentReference(UUID.randomUUID().toString());
+    payment.setStatus(PaymentStatus.PENDING);
+    payment.setCreatedAt(LocalDateTime.now());
 
+    if (null == payment.getExecutionDate()) {
+      payment.setExecutionDate(LocalDateTime.now());
+    }
+
+    return payment;
   }
-
-  private Predicate<CreatePaymentInput> validatePayeeReference() {
-
-    return createPaymentInput -> Optional
-      .ofNullable(createPaymentInput.payeeReference())
-      .filter(Predicate.not(String::isBlank))
-      .map(_ -> true)
-      .orElseThrow(() -> new PaymentInputException("The value for 'payeeReference' is required."));
-
-  }
-
-  private Predicate<CreatePaymentInput> validatePaymentAmount() {
-
-    return createPaymentInput -> {
-      PaymentValidations.requirePositiveAmount(createPaymentInput.paymentAmount());
-      return true;
-    };
-
-  }
-
-  private Predicate<CreatePaymentInput> validateExecutionDate() {
-
-    return createPaymentInput -> {
-      PaymentValidations.requireFutureOrAbsentDate(createPaymentInput.executionDate());
-      return true;
-    };
-
-  }
-
-  private Payment enrichPayment(Payment payment) {
-
-    return payment
-      .setPaymentReference(UUID.randomUUID().toString())
-      .setStatus(PaymentStatus.PENDING)
-      .setExecutionDate(Optional.ofNullable(payment.getExecutionDate()).orElseGet(LocalDateTime::now))
-      .setCreatedAt(LocalDateTime.now());
-
-  }
-
 }

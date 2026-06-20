@@ -1,5 +1,6 @@
 package net.coatli.reference.portsandadapters.application.core;
 
+import net.coatli.reference.portsandadapters.application.port.in.exception.PaymentInputException;
 import net.coatli.reference.portsandadapters.application.port.in.model.RetrieveAllPaymentsInput;
 import net.coatli.reference.portsandadapters.application.port.in.model.mapper.RetrieveAllPaymentsPortInMapper;
 import net.coatli.reference.portsandadapters.application.port.out.logging.LoggingPortOut;
@@ -20,8 +21,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-
 @ExtendWith(MockitoExtension.class)
 class PaymentAllRetrieverTest {
 
@@ -45,7 +44,7 @@ class PaymentAllRetrieverTest {
   }
 
   @Test
-  @DisplayName("Caso 01: Éxito - Given pagos existentes, When execute, Then retorna página con pagos")
+  @DisplayName("Case 01: Success - Given existing payments, When execute, Then returns page with payments")
   void case01() {
     var payment = new Payment().setPaymentReference("ref-1");
     var pagedResult = new Page<Payment>()
@@ -65,7 +64,7 @@ class PaymentAllRetrieverTest {
   }
 
   @Test
-  @DisplayName("Caso 02: Éxito - Given sin pagos registrados, When execute, Then retorna página vacía")
+  @DisplayName("Case 02: Success - Given no registered payments, When execute, Then returns empty page")
   void case02() {
     var pagedResult = new Page<Payment>()
       .setContent(List.of())
@@ -80,9 +79,9 @@ class PaymentAllRetrieverTest {
   }
 
   @Test
-  @DisplayName("Caso 03: Fallo - Given input nulo, When execute, Then lanza NoSuchElementException")
+  @DisplayName("Case 03: Failure - Given null input, When execute, Then throws PaymentInputException")
   void case03() {
-    Assertions.assertThrows(NoSuchElementException.class, () -> paymentAllRetriever.execute(null));
+    Assertions.assertThrows(PaymentInputException.class, () -> paymentAllRetriever.execute(null));
   }
 
 }

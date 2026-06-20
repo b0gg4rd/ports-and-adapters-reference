@@ -12,8 +12,8 @@ public interface PaymentPersistencePortOut {
 
   Optional<Payment> findByPaymentReference(String paymentReference);
 
-  Optional<Payment> update(Payment payment);
+  Payment update(Payment payment);
 
-  Optional<Payment> delete(String paymentReference);
+  Payment delete(String paymentReference);
 
 }

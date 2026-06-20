@@ -46,75 +46,30 @@ class PaymentUpdaterTest {
   }
 
   @Test
-  @DisplayName("Caso 01: Fallo - Given input nulo, When execute, Then lanza PaymentInputException")
+  @DisplayName("Case 01: Success - Given all optional fields null, When execute, Then updates and returns output")
   void case01() {
-    Assertions.assertThrows(PaymentInputException.class, () -> paymentUpdater.execute(null));
-  }
-
-  @Test
-  @DisplayName("Caso 02: Fallo - Given 'paymentReference' nulo, When execute, Then lanza PaymentInputException")
-  void case02() {
-    var input = new UpdatePaymentInput(null, new BigDecimal("100.00"), "subject", null);
-    Assertions.assertThrows(PaymentInputException.class, () -> paymentUpdater.execute(input));
-  }
-
-  @Test
-  @DisplayName("Caso 03: Fallo - Given 'paymentReference' en blanco, When execute, Then lanza PaymentInputException")
-  void case03() {
-    var input = new UpdatePaymentInput("   ", new BigDecimal("100.00"), "subject", null);
-    Assertions.assertThrows(PaymentInputException.class, () -> paymentUpdater.execute(input));
-  }
-
-  @Test
-  @DisplayName("Caso 04: Fallo - Given 'executionDate' en el pasado, When execute, Then lanza PaymentInputException")
-  void case04() {
-    var input = new UpdatePaymentInput("payee-1", null, null, LocalDateTime.now().minusDays(1));
-    Assertions.assertThrows(PaymentInputException.class, () -> paymentUpdater.execute(input));
-  }
-
-  @Test
-  @DisplayName("Caso 05: Fallo - Given pago no encontrado, When execute, Then lanza PaymentNotFoundException")
-  void case05() {
-    var input = new UpdatePaymentInput("payee-1", null, null, null);
-    Mockito.when(paymentPersistencePortOut.findByPaymentReference("payee-1"))
-      .thenReturn(Optional.empty());
-    Assertions.assertThrows(PaymentNotFoundException.class, () -> paymentUpdater.execute(input));
-  }
-
-  @Test
-  @DisplayName("Caso 06: Fallo - Given persistencia retorna vacío en update, When execute, Then lanza IllegalStateException")
-  void case06() {
-    var input = new UpdatePaymentInput("payee-1", null, null, null);
-    var payment = new Payment().setPaymentReference("ref-1");
-    Mockito.when(paymentPersistencePortOut.findByPaymentReference("payee-1"))
+    var uuid = "550e8400-e29b-41d4-a716-446655440000";
+    var input = new UpdatePaymentInput(uuid, null, null, null);
+    var payment = new Payment().setPaymentReference(uuid);
+    Mockito.when(paymentPersistencePortOut.findByPaymentReference(uuid))
       .thenReturn(Optional.of(payment));
-    Mockito.when(paymentPersistencePortOut.update(ArgumentMatchers.any())).thenReturn(Optional.empty());
-    Assertions.assertThrows(IllegalStateException.class, () -> paymentUpdater.execute(input));
-  }
-
-  @Test
-  @DisplayName("Caso 07: Éxito - Given todos los campos opcionales nulos, When execute, Then actualiza y retorna output")
-  void case07() {
-    var input = new UpdatePaymentInput("payee-1", null, null, null);
-    var payment = new Payment().setPaymentReference("ref-1");
-    Mockito.when(paymentPersistencePortOut.findByPaymentReference("payee-1"))
-      .thenReturn(Optional.of(payment));
-    Mockito.when(paymentPersistencePortOut.update(payment)).thenReturn(Optional.of(payment));
+    Mockito.when(paymentPersistencePortOut.update(payment)).thenReturn(payment);
 
     var result = paymentUpdater.execute(input);
 
-    Assertions.assertEquals("ref-1", result.paymentReference());
+    Assertions.assertEquals(uuid, result.paymentReference());
   }
 
   @Test
-  @DisplayName("Caso 08: Éxito - Given 'paymentAmount' positivo, When execute, Then actualiza el monto")
-  void case08() {
+  @DisplayName("Case 02: Success - Given positive paymentAmount, When execute, Then updates the amount")
+  void case02() {
+    var uuid = "550e8400-e29b-41d4-a716-446655440000";
     var newAmount = new BigDecimal("250.00");
-    var input = new UpdatePaymentInput("payee-1", newAmount, null, null);
-    var payment = new Payment().setPaymentReference("ref-1");
-    Mockito.when(paymentPersistencePortOut.findByPaymentReference("payee-1"))
+    var input = new UpdatePaymentInput(uuid, newAmount, null, null);
+    var payment = new Payment().setPaymentReference(uuid);
+    Mockito.when(paymentPersistencePortOut.findByPaymentReference(uuid))
       .thenReturn(Optional.of(payment));
-    Mockito.when(paymentPersistencePortOut.update(payment)).thenReturn(Optional.of(payment));
+    Mockito.when(paymentPersistencePortOut.update(payment)).thenReturn(payment);
 
     paymentUpdater.execute(input);
 
@@ -122,23 +77,14 @@ class PaymentUpdaterTest {
   }
 
   @Test
-  @DisplayName("Caso 09: Fallo - Given 'paymentAmount' en cero, When execute, Then lanza PaymentInputException")
-  void case09() {
-    var input = new UpdatePaymentInput("payee-1", BigDecimal.ZERO, null, null);
-    var payment = new Payment().setPaymentReference("ref-1");
-    Mockito.when(paymentPersistencePortOut.findByPaymentReference("payee-1"))
+  @DisplayName("Case 03: Success - Given non-empty paymentSubject, When execute, Then updates the subject")
+  void case03() {
+    var uuid = "550e8400-e29b-41d4-a716-446655440000";
+    var input = new UpdatePaymentInput(uuid, null, "new subject", null);
+    var payment = new Payment().setPaymentReference(uuid);
+    Mockito.when(paymentPersistencePortOut.findByPaymentReference(uuid))
       .thenReturn(Optional.of(payment));
-    Assertions.assertThrows(PaymentInputException.class, () -> paymentUpdater.execute(input));
-  }
-
-  @Test
-  @DisplayName("Caso 10: Éxito - Given 'paymentSubject' no vacío, When execute, Then actualiza el subject")
-  void case10() {
-    var input = new UpdatePaymentInput("payee-1", null, "new subject", null);
-    var payment = new Payment().setPaymentReference("ref-1");
-    Mockito.when(paymentPersistencePortOut.findByPaymentReference("payee-1"))
-      .thenReturn(Optional.of(payment));
-    Mockito.when(paymentPersistencePortOut.update(payment)).thenReturn(Optional.of(payment));
+    Mockito.when(paymentPersistencePortOut.update(payment)).thenReturn(payment);
 
     paymentUpdater.execute(input);
 
@@ -146,13 +92,14 @@ class PaymentUpdaterTest {
   }
 
   @Test
-  @DisplayName("Caso 11: Éxito - Given 'paymentSubject' en blanco, When execute, Then no actualiza el subject")
-  void case11() {
-    var input = new UpdatePaymentInput("payee-1", null, "   ", null);
-    var payment = new Payment().setPaymentReference("ref-1").setPaymentSubject("original");
-    Mockito.when(paymentPersistencePortOut.findByPaymentReference("payee-1"))
+  @DisplayName("Case 04: Success - Given blank paymentSubject, When execute, Then preserves original subject")
+  void case04() {
+    var uuid = "550e8400-e29b-41d4-a716-446655440000";
+    var input = new UpdatePaymentInput(uuid, null, "   ", null);
+    var payment = new Payment().setPaymentReference(uuid).setPaymentSubject("original");
+    Mockito.when(paymentPersistencePortOut.findByPaymentReference(uuid))
       .thenReturn(Optional.of(payment));
-    Mockito.when(paymentPersistencePortOut.update(payment)).thenReturn(Optional.of(payment));
+    Mockito.when(paymentPersistencePortOut.update(payment)).thenReturn(payment);
 
     paymentUpdater.execute(input);
 
@@ -160,18 +107,74 @@ class PaymentUpdaterTest {
   }
 
   @Test
-  @DisplayName("Caso 12: Éxito - Given 'executionDate' futuro, When execute, Then actualiza la fecha de ejecución")
-  void case12() {
+  @DisplayName("Case 05: Success - Given future executionDate, When execute, Then updates the execution date")
+  void case05() {
+    var uuid = "550e8400-e29b-41d4-a716-446655440000";
     var futureDate = LocalDateTime.now().plusDays(1);
-    var input = new UpdatePaymentInput("payee-1", null, null, futureDate);
-    var payment = new Payment().setPaymentReference("ref-1");
-    Mockito.when(paymentPersistencePortOut.findByPaymentReference("payee-1"))
+    var input = new UpdatePaymentInput(uuid, null, null, futureDate);
+    var payment = new Payment().setPaymentReference(uuid);
+    Mockito.when(paymentPersistencePortOut.findByPaymentReference(uuid))
       .thenReturn(Optional.of(payment));
-    Mockito.when(paymentPersistencePortOut.update(payment)).thenReturn(Optional.of(payment));
+    Mockito.when(paymentPersistencePortOut.update(payment)).thenReturn(payment);
 
     paymentUpdater.execute(input);
 
     Assertions.assertEquals(futureDate, payment.getExecutionDate());
+  }
+
+  @Test
+  @DisplayName("Case 06: Failure - Given null input, When execute, Then throws PaymentInputException")
+  void case06() {
+    Assertions.assertThrows(PaymentInputException.class, () -> paymentUpdater.execute(null));
+  }
+
+  @Test
+  @DisplayName("Case 07: Failure - Given null paymentReference, When execute, Then throws PaymentInputException")
+  void case07() {
+    var input = new UpdatePaymentInput(null, new BigDecimal("100.00"), "subject", null);
+    Assertions.assertThrows(PaymentInputException.class, () -> paymentUpdater.execute(input));
+  }
+
+  @Test
+  @DisplayName("Case 08: Failure - Given blank paymentReference, When execute, Then throws PaymentInputException")
+  void case08() {
+    var input = new UpdatePaymentInput("   ", new BigDecimal("100.00"), "subject", null);
+    Assertions.assertThrows(PaymentInputException.class, () -> paymentUpdater.execute(input));
+  }
+
+  @Test
+  @DisplayName("Case 09: Failure - Given past executionDate, When execute, Then throws PaymentInputException")
+  void case09() {
+    var input = new UpdatePaymentInput("payee-1", null, null, LocalDateTime.now().minusDays(1));
+    Assertions.assertThrows(PaymentInputException.class, () -> paymentUpdater.execute(input));
+  }
+
+  @Test
+  @DisplayName("Case 10: Failure - Given payment not found, When execute, Then throws PaymentNotFoundException")
+  void case10() {
+    var uuid = "550e8400-e29b-41d4-a716-446655440001";
+    var input = new UpdatePaymentInput(uuid, null, null, null);
+    Mockito.when(paymentPersistencePortOut.findByPaymentReference(uuid))
+      .thenReturn(Optional.empty());
+    Assertions.assertThrows(PaymentNotFoundException.class, () -> paymentUpdater.execute(input));
+  }
+
+  @Test
+  @DisplayName("Case 11: Failure - Given zero paymentAmount, When execute, Then throws PaymentInputException")
+  void case11() {
+    var uuid = "550e8400-e29b-41d4-a716-446655440000";
+    var input = new UpdatePaymentInput(uuid, BigDecimal.ZERO, null, null);
+    var payment = new Payment().setPaymentReference(uuid);
+    Mockito.when(paymentPersistencePortOut.findByPaymentReference(uuid))
+      .thenReturn(Optional.of(payment));
+    Assertions.assertThrows(PaymentInputException.class, () -> paymentUpdater.execute(input));
+  }
+
+  @Test
+  @DisplayName("Case 12: Failure - Given invalid UUID paymentReference, When execute, Then throws PaymentInputException")
+  void case12() {
+    var input = new UpdatePaymentInput("invalid-uuid", null, null, null);
+    Assertions.assertThrows(PaymentInputException.class, () -> paymentUpdater.execute(input));
   }
 
 }

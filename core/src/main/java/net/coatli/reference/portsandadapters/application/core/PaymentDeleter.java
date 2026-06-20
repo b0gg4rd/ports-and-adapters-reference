@@ -11,9 +11,6 @@ import net.coatli.reference.portsandadapters.application.port.out.persistence.Pa
 import net.coatli.reference.portsandadapters.application.port.out.transformation.JsonTransformationPortOut;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Optional;
-import java.util.function.Predicate;
-
 @RequiredArgsConstructor
 public class PaymentDeleter implements DeletePaymentPortIn {
 
@@ -30,35 +27,27 @@ public class PaymentDeleter implements DeletePaymentPortIn {
       "[core.payment.delete] input: '{}'",
       jsonTransformationPortOut.toJson(deletePaymentInput));
 
-    return Optional
-      .of(isNullDeletePaymentInput(deletePaymentInput))
-      .filter(validatePaymentReference())
-      .map(input -> paymentPersistencePortOut
-        .findByPaymentReference(input.paymentReference())
-        .orElseThrow(() -> new PaymentNotFoundException(
-          "Payment not found for paymentReference: " + input.paymentReference())))
-      .flatMap(payment -> paymentPersistencePortOut.delete(payment.getPaymentReference()))
-      .map(deletePaymentPortInMapper::mappingPayment2DeletePaymentOutput)
-      .orElseThrow(() -> new IllegalStateException("The persistence delete method return 'null'"));
+    validateInput(deletePaymentInput);
 
+    final var payment = paymentPersistencePortOut
+      .findByPaymentReference(deletePaymentInput.paymentReference())
+      .orElseThrow(() -> new PaymentNotFoundException(
+        "Payment not found for paymentReference: " + deletePaymentInput.paymentReference()));
+
+    return deletePaymentPortInMapper.mappingPayment2DeletePaymentOutput(
+      paymentPersistencePortOut.delete(payment.getPaymentReference()));
   }
 
-  private DeletePaymentInput isNullDeletePaymentInput(DeletePaymentInput deletePaymentInput) {
+  private void validateInput(final DeletePaymentInput deletePaymentInput) {
 
-    return Optional
-      .ofNullable(deletePaymentInput)
-      .orElseThrow(() -> new PaymentInputException("Illegal argument, the 'deletePaymentInput' must not be 'null'."));
+    if (null == deletePaymentInput) {
+      throw new PaymentInputException("Illegal argument, the 'deletePaymentInput' must not be 'null'.");
+    }
 
+    if (null == deletePaymentInput.paymentReference() || deletePaymentInput.paymentReference().isBlank()) {
+      throw new PaymentInputException("The value for 'paymentReference' is required.");
+    }
+
+    PaymentValidations.requireValidUUID(deletePaymentInput.paymentReference());
   }
-
-  private Predicate<DeletePaymentInput> validatePaymentReference() {
-
-    return deletePaymentInput -> Optional
-      .ofNullable(deletePaymentInput.paymentReference())
-      .filter(Predicate.not(String::isBlank))
-      .map(_ -> true)
-      .orElseThrow(() -> new PaymentInputException("The value for 'paymentReference' is required."));
-
-  }
-
 }

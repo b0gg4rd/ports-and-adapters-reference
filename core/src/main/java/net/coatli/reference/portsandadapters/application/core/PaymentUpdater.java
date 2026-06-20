@@ -12,10 +12,6 @@ import net.coatli.reference.portsandadapters.application.port.out.transformation
 import net.coatli.reference.portsandadapters.domain.model.Payment;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
-
 @RequiredArgsConstructor
 public class PaymentUpdater implements UpdatePaymentPortIn {
 
@@ -32,77 +28,47 @@ public class PaymentUpdater implements UpdatePaymentPortIn {
       "[core.payment.update] input: '{}'",
       jsonTransformationPortOut.toJson(updatePaymentInput));
 
-    return Optional
-      .of(isNullUpdatePaymentInput(updatePaymentInput))
-      .filter(validatePayeeReference())
-      .filter(validateExecutionDate())
-      .map(findByPaymentReference())
-      .map(applyUpdates(updatePaymentInput))
-      .flatMap(paymentPersistencePortOut::update)
-      .map(updatePaymentPortInMapper::mappingPayment2UpdatePaymentOutput)
-      .orElseThrow(() -> new IllegalStateException("The persistence update method return 'null'"));
+    validateInput(updatePaymentInput);
 
+    final var payment = paymentPersistencePortOut
+      .findByPaymentReference(updatePaymentInput.paymentReference())
+      .orElseThrow(() -> new PaymentNotFoundException(
+        "Payment not found for paymentReference: " + updatePaymentInput.paymentReference()));
+
+    applyUpdates(updatePaymentInput, payment);
+
+    return updatePaymentPortInMapper.mappingPayment2UpdatePaymentOutput(
+      paymentPersistencePortOut.update(payment));
   }
 
-  private UpdatePaymentInput isNullUpdatePaymentInput(UpdatePaymentInput updatePaymentInput) {
+  private void validateInput(final UpdatePaymentInput updatePaymentInput) {
 
-    return Optional
-      .ofNullable(updatePaymentInput)
-      .orElseThrow(() -> new PaymentInputException("Illegal argument, the 'updatePaymentInput' must not be 'null'."));
+    if (null == updatePaymentInput) {
+      throw new PaymentInputException("Illegal argument, the 'updatePaymentInput' must not be 'null'.");
+    }
 
+    if (null == updatePaymentInput.paymentReference() || updatePaymentInput.paymentReference().isBlank()) {
+      throw new PaymentInputException("The value for 'paymentReference' is required.");
+    }
+
+    PaymentValidations.requireValidUUID(updatePaymentInput.paymentReference());
+    PaymentValidations.requireFutureOrAbsentDate(updatePaymentInput.executionDate());
   }
 
-  private Function<UpdatePaymentInput, Payment> findByPaymentReference() {
+  private void applyUpdates(final UpdatePaymentInput updatePaymentInput, final Payment payment) {
 
-    return updatePaymentInput -> paymentPersistencePortOut
-      .findByPaymentReference(updatePaymentInput.payeeReference())
-      .orElseThrow(() -> new PaymentNotFoundException("Payment not found for payeeReference: " + updatePaymentInput.payeeReference()));
+    if (null != updatePaymentInput.paymentAmount()) {
+      PaymentValidations.requirePositiveAmount(updatePaymentInput.paymentAmount());
+      payment.setPaymentAmount(updatePaymentInput.paymentAmount());
+    }
 
-  }
+    if (null != updatePaymentInput.paymentSubject() && !updatePaymentInput.paymentSubject().isBlank()) {
+      payment.setPaymentSubject(updatePaymentInput.paymentSubject());
+    }
 
-  private Function<Payment, Payment> applyUpdates(UpdatePaymentInput updatePaymentInput) {
-
-    return payment -> {
-
-      Optional.ofNullable(updatePaymentInput.paymentAmount())
-        .ifPresent(amount -> {
-          PaymentValidations.requirePositiveAmount(amount);
-          payment.setPaymentAmount(amount);
-        });
-
-      Optional.ofNullable(updatePaymentInput.paymentSubject())
-        .filter(Predicate.not(String::isBlank))
-        .ifPresent(payment::setPaymentSubject);
-
-      Optional.ofNullable(updatePaymentInput.executionDate())
-        .ifPresent(date -> {
-          PaymentValidations.requireFutureOrAbsentDate(date);
-          payment.setExecutionDate(date);
-        });
-
-      return payment;
-
-    };
-
-  }
-
-  private Predicate<UpdatePaymentInput> validatePayeeReference() {
-
-    return updatePaymentInput -> Optional
-      .ofNullable(updatePaymentInput.payeeReference())
-      .filter(Predicate.not(String::isBlank))
-      .map(_ -> true)
-      .orElseThrow(() -> new PaymentInputException("The value for 'payeeReference' is required."));
-
-  }
-
-  private Predicate<UpdatePaymentInput> validateExecutionDate() {
-
-    return updatePaymentInput -> {
+    if (null != updatePaymentInput.executionDate()) {
       PaymentValidations.requireFutureOrAbsentDate(updatePaymentInput.executionDate());
-      return true;
-    };
-
+      payment.setExecutionDate(updatePaymentInput.executionDate());
+    }
   }
-
 }

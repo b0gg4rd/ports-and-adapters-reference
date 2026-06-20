@@ -1,19 +1,14 @@
 package net.coatli.reference.portsandadapters.application.core;
 
 import net.coatli.reference.portsandadapters.application.port.in.RetrieveAllPaymentsPortIn;
+import net.coatli.reference.portsandadapters.application.port.in.exception.PaymentInputException;
 import net.coatli.reference.portsandadapters.application.port.in.model.RetrieveAllPaymentsInput;
 import net.coatli.reference.portsandadapters.application.port.in.model.RetrieveAllPaymentsOutput;
 import net.coatli.reference.portsandadapters.application.port.in.model.mapper.RetrieveAllPaymentsPortInMapper;
 import net.coatli.reference.portsandadapters.application.port.out.logging.LoggingPortOut;
 import net.coatli.reference.portsandadapters.application.port.out.persistence.PaymentPersistencePortOut;
 import net.coatli.reference.portsandadapters.application.port.out.transformation.JsonTransformationPortOut;
-import net.coatli.reference.portsandadapters.domain.model.Page;
-import net.coatli.reference.portsandadapters.domain.model.Pagination;
-import net.coatli.reference.portsandadapters.domain.model.Payment;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Optional;
-import java.util.function.Function;
 
 @RequiredArgsConstructor
 public class PaymentAllRetriever implements RetrieveAllPaymentsPortIn {
@@ -31,23 +26,12 @@ public class PaymentAllRetriever implements RetrieveAllPaymentsPortIn {
       "[core.payment.retrieve] input: '{}'",
       jsonTransformationPortOut.toJson(retrieveAllPaymentsInput));
 
-    return Optional
-      .ofNullable(retrieveAllPaymentsInput)
-      .map(parsingPagination())
-      .map(page -> paymentPersistencePortOut.retrieveAll(page))
-      .map(retrieveAllPaymentsPortInMapper::mappingPayments2RetrieveAllPaymentsOutput)
-      .orElseThrow();
+    if (null == retrieveAllPaymentsInput) {
+      throw new PaymentInputException("Illegal argument, the 'retrieveAllPaymentsInput' must not be 'null'.");
+    }
 
+    return retrieveAllPaymentsPortInMapper.mappingPayments2RetrieveAllPaymentsOutput(
+      paymentPersistencePortOut.retrieveAll(
+        retrieveAllPaymentsPortInMapper.mappingRetrieveAllPaymentsInput2Page(retrieveAllPaymentsInput)));
   }
-
-  private Function<RetrieveAllPaymentsInput, Page<Payment>> parsingPagination() {
-
-    return retrieveAllPaymentsInput -> new Page<Payment>()
-      .setPagination(
-        new Pagination()
-          .setPage(retrieveAllPaymentsInput.page())
-          .setSize(retrieveAllPaymentsInput.size()));
-
-  }
-
 }
