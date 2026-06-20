@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+  <Appenders>
+    <Console name="console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d [%X{X-Trace-Id}] %p %c{1} [%t] %m %ex%n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Logger name="${project.groupId}" level="${logger.app.level}" includeLocation="false" additivity="false">
+      <AppenderRef ref="console" />
+    </Logger>
+    <Root level="${logger.root.level}" includeLocation="false">
+      <AppenderRef ref="console" />
+    </Root>
+  </Loggers>
+</Configuration>

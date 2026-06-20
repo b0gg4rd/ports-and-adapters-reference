@@ -1,0 +1,112 @@
+package net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.util;
+
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.Headers;
+import io.undertow.util.HttpString;
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
+public class UndertowHeaderUtils {
+
+  private static final String NO_STORE = "no-store";
+
+  private static final String NO_CACHE = "no-cache";
+
+  public static final String APPLICATION_JSON_UTF8 = "application/json; charset=utf-8";
+
+  public static final String TEXT_PLAIN_UTF8 = "text/plain; charset=utf-8";
+
+  public static final String X_TRACE_ID = "X-T";
+
+  public static final HttpString X_TRACE_ID_HTTPSTRING = new HttpString(X_TRACE_ID);
+
+  public static String getHeader(final HttpServerExchange httpServerExchange,
+                                 final String             name) {
+
+    final var headerValues = httpServerExchange
+      .getRequestHeaders()
+      .get(name);
+
+    return
+      null == headerValues
+        ? null
+        : headerValues.getLast().trim();
+
+  }
+
+  public static void putRequestHeader(final HttpServerExchange httpServerExchange,
+                                      final String             name,
+                                      final Object             value) {
+
+    putResponseHeader(
+      httpServerExchange,
+      new HttpString(name),
+      value);
+
+  }
+
+  public static void putRequestHeader(final HttpServerExchange httpServerExchange,
+                                      final HttpString         name,
+                                      final Object             value) {
+
+    httpServerExchange
+      .getRequestHeaders()
+      .put(
+        name,
+        String.valueOf(value).trim());
+
+  }
+
+  public static void putResponseHeader(final HttpServerExchange httpServerExchange,
+                                       final String             name,
+                                       final Object             value) {
+
+    putResponseHeader(
+      httpServerExchange,
+      new HttpString(name),
+      value);
+
+  }
+
+  public static void putResponseHeader(final HttpServerExchange httpServerExchange,
+                                       final HttpString         name,
+                                       final Object             value) {
+
+    httpServerExchange
+      .getResponseHeaders()
+      .put(
+        name,
+        String.valueOf(value).trim());
+
+  }
+
+  public static String retrieveTraceId(final HttpServerExchange exchange) {
+
+    return getHeader(exchange, X_TRACE_ID);
+
+  }
+
+  public static void defaultResponseContentType(final HttpServerExchange exchange) {
+
+    putResponseHeader(
+      exchange,
+      Headers.CONTENT_TYPE,
+      APPLICATION_JSON_UTF8);
+
+  }
+
+  public static void noCache(final HttpServerExchange exchange) {
+
+    putResponseHeader(
+      exchange,
+      Headers.CACHE_CONTROL,
+      NO_STORE);
+
+    putResponseHeader(
+      exchange,
+      Headers.PRAGMA,
+      NO_CACHE);
+
+  }
+
+}

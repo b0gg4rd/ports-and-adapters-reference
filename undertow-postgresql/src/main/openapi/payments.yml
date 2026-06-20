@@ -1,0 +1,181 @@
+openapi: 3.0.3
+info:
+  title: @project.description@
+  version: @project.version@
+tags:
+  - name: Payments
+paths:
+  /payments:
+    post:
+      tags:
+        - Payments
+      operationId: create-payment
+      summary: Create a Payment.
+      requestBody:
+        $ref: '#/components/schemas/CreatePaymentRequest'
+      responses:
+        '201':
+          description: Payment created.
+          headers:
+            a0:
+              description: Payment Reference
+              schema:
+                type: string
+        '400':
+          description: Bad request.
+        '500':
+          description: Internal server error.
+    get:
+      tags:
+        - Payments
+      operationId: retrieve-all-payments
+      summary: Retrieve all Payments.
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Payments retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveAllPaymentsResponse'
+        '500':
+          description: Internal server error.
+  /payments/{a0}:
+    put:
+      tags:
+        - Payments
+      operationId: update-payment
+      summary: Update a Payment.
+      parameters:
+        - name: a0
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: '#/components/schemas/UpdatePaymentRequest'
+      responses:
+        '200':
+          description: Payment updated.
+          headers:
+            a0:
+              description: Payment Reference
+              schema:
+                type: string
+        '400':
+          description: Bad request.
+        '404':
+          description: Not found.
+        '500':
+          description: Internal server error.
+    delete:
+      tags:
+        - Payments
+      operationId: delete-payment
+      summary: Delete a Payment.
+      parameters:
+        - name: a0
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Payment deleted.
+        '400':
+          description: Bad request.
+        '404':
+          description: Not found.
+        '500':
+          description: Internal server error.
+components:
+  schemas:
+    CreatePaymentRequest:
+      type: object
+      properties:
+        a1:
+          type: string
+          description: Payer Reference.
+        a2:
+          type: string
+          description: Payee Reference.
+        a3:
+          type: number
+          description: Payment Amount.
+        a4:
+          type: string
+          description: Payment Subject.
+        a5:
+          type: string
+          format: date-time
+          description: Execution Date.
+    UpdatePaymentRequest:
+      type: object
+      properties:
+        a1:
+          type: number
+          description: Payment Amount.
+        a2:
+          type: string
+          description: Payment Subject.
+        a3:
+          type: string
+          format: date-time
+          description: Execution Date.
+    PaymentData:
+      type: object
+      properties:
+        a0:
+          type: string
+          description: Payment Reference.
+        a1:
+          type: string
+          description: Payer Reference.
+        a2:
+          type: string
+          description: Payee Reference.
+        a3:
+          type: string
+          description: Payment Amount.
+        a4:
+          type: string
+          description: Payment Subject.
+        a5:
+          type: string
+          description: Execution Date.
+        a6:
+          type: string
+          description: Status.
+        a7:
+          type: string
+          description: Created At.
+    RetrieveAllPaymentsResponse:
+      type: object
+      properties:
+        a0:
+          type: integer
+          description: Page number.
+        a1:
+          type: integer
+          description: Page size.
+        a2:
+          type: integer
+          format: int64
+          description: Total elements.
+        a3:
+          type: integer
+          description: Total pages.
+        a4:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentData'

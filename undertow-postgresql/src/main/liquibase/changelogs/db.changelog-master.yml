@@ -1,0 +1,5 @@
+databaseChangeLog:
+  # DDL
+  - include:
+      file: db.changelog-ddl-payment.sql
+      relativeToChangelogFile: true
