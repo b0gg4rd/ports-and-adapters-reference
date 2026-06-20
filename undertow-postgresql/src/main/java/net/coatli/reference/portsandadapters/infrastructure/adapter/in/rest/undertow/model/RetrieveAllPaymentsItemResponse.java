@@ -1,6 +1,6 @@
 package net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.model;
 
-public record PaymentData(
+public record RetrieveAllPaymentsItemResponse(
 
   String a0,
 

@@ -75,22 +75,16 @@ src/main/java/net/coatli/reference/portsandadapters/
     │   │       ├── config/
     │   │       │   ├── ExceptionConfig.java
     │   │       │   └── RoutesConfig.java
-    │   │       ├── model/
-    │   │       │   ├── CreatePaymentRequest.java
-    │   │       │   ├── UpdatePaymentRequest.java
-    │   │       │   ├── PaymentData.java
-    │   │       │   ├── RetrieveAllPaymentsResponse.java
-    │   │       │   └── mapper/
-    │   │       │       ├── CreatePaymentHandlerMapper.java
-    │   │       │       ├── RetrieveAllPaymentsHandlerMapper.java
-    │   │       │       ├── UpdatePaymentHandlerMapper.java
-    │   │       │       └── DeletePaymentHandlerMapper.java
-    │   │       └── util/
-    │   │           ├── UndertowAppUtils.java
-    │   │           ├── UndertowHeaderUtils.java
-    │   │           ├── UndertowQueryParamUtils.java
-    │   │           ├── UndertowRequestBodyUtils.java
-    │   │           └── UndertowResponseBodyUtils.java
+    │   │       └── model/
+    │   │           ├── CreatePaymentRequest.java
+    │   │           ├── UpdatePaymentRequest.java
+    │   │           ├── RetrieveAllPaymentsResponse.java
+    │   │           ├── RetrieveAllPaymentsItemResponse.java
+    │   │           └── mapper/
+    │   │               ├── CreatePaymentHandlerMapper.java
+    │   │               ├── RetrieveAllPaymentsHandlerMapper.java
+    │   │               ├── UpdatePaymentHandlerMapper.java
+    │   │               └── DeletePaymentHandlerMapper.java
     │   └── out/
     │       ├── logging/slf4j/
     │       │   └── Slf4jLoggingAdapter.java

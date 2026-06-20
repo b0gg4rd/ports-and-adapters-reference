@@ -12,6 +12,6 @@ public record RetrieveAllPaymentsResponse(
 
   int a3,
 
-  List<PaymentData> a4) {
+  List<RetrieveAllPaymentsItemResponse> a4) {
 
 }
