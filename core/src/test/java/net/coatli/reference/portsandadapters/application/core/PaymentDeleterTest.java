@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.Assertions;
 import org.mapstruct.factory.Mappers;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -37,10 +36,11 @@ class PaymentDeleterTest {
 
   @BeforeEach
   void setUp() {
-    Mockito.when(jsonTransformationPortOut.toJson(ArgumentMatchers.any())).thenReturn("{}");
     paymentDeleter = new PaymentDeleter(
-      loggingPortOut, jsonTransformationPortOut,
-      Mappers.getMapper(DeletePaymentPortInMapper.class), paymentPersistencePortOut);
+      loggingPortOut,
+      jsonTransformationPortOut,
+      Mappers.getMapper(DeletePaymentPortInMapper.class),
+      paymentPersistencePortOut);
   }
 
   @Test

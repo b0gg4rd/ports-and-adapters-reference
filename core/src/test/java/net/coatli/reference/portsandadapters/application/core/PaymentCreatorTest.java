@@ -39,10 +39,11 @@ class PaymentCreatorTest {
 
   @BeforeEach
   void setUp() {
-    Mockito.when(jsonTransformationPortOut.toJson(ArgumentMatchers.any())).thenReturn("{}");
     paymentCreator = new PaymentCreator(
-      loggingPortOut, jsonTransformationPortOut,
-      Mappers.getMapper(CreatePaymentPortInMapper.class), paymentPersistencePortOut);
+      loggingPortOut,
+      jsonTransformationPortOut,
+      Mappers.getMapper(CreatePaymentPortInMapper.class),
+      paymentPersistencePortOut);
   }
 
   @Test

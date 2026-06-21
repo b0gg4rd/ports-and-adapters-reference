@@ -22,6 +22,10 @@ public class PaymentDeleter implements DeletePaymentPortIn {
   @Override
   public DeletePaymentOutput execute(final DeletePaymentInput deletePaymentInput) {
 
+    if (null == deletePaymentInput) {
+      throw new PaymentInputException("Illegal argument, the 'deletePaymentInput' must not be 'null'.");
+    }
+
     loggingPortOut.info(
       this.getClass(),
       "[core.payment.delete] input: '{}'",
@@ -39,10 +43,6 @@ public class PaymentDeleter implements DeletePaymentPortIn {
   }
 
   private void validateInput(final DeletePaymentInput deletePaymentInput) {
-
-    if (null == deletePaymentInput) {
-      throw new PaymentInputException("Illegal argument, the 'deletePaymentInput' must not be 'null'.");
-    }
 
     if (null == deletePaymentInput.paymentReference() || deletePaymentInput.paymentReference().isBlank()) {
       throw new PaymentInputException("The value for 'paymentReference' is required.");

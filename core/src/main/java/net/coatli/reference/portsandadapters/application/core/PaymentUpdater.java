@@ -23,6 +23,10 @@ public class PaymentUpdater implements UpdatePaymentPortIn {
   @Override
   public UpdatePaymentOutput execute(final UpdatePaymentInput updatePaymentInput) {
 
+    if (null == updatePaymentInput) {
+      throw new PaymentInputException("Illegal argument, the 'updatePaymentInput' must not be 'null'.");
+    }
+
     loggingPortOut.info(
       this.getClass(),
       "[core.payment.update] input: '{}'",
@@ -42,10 +46,6 @@ public class PaymentUpdater implements UpdatePaymentPortIn {
   }
 
   private void validateInput(final UpdatePaymentInput updatePaymentInput) {
-
-    if (null == updatePaymentInput) {
-      throw new PaymentInputException("Illegal argument, the 'updatePaymentInput' must not be 'null'.");
-    }
 
     if (null == updatePaymentInput.paymentReference() || updatePaymentInput.paymentReference().isBlank()) {
       throw new PaymentInputException("The value for 'paymentReference' is required.");

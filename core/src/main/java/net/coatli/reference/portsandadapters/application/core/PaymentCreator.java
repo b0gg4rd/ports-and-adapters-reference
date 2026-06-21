@@ -26,6 +26,10 @@ public class PaymentCreator implements CreatePaymentPortIn {
   @Override
   public CreatePaymentOutput execute(final CreatePaymentInput createPaymentInput) {
 
+    if (null == createPaymentInput) {
+      throw new PaymentInputException("Illegal argument, the 'createPaymentInput' must not be 'null'.");
+    }
+
     loggingPortOut.info(
       this.getClass(),
       "[core.payment.create] input: '{}'",
@@ -44,10 +48,6 @@ public class PaymentCreator implements CreatePaymentPortIn {
   }
 
   private void validateInput(final CreatePaymentInput createPaymentInput) {
-
-    if (null == createPaymentInput) {
-      throw new PaymentInputException("Illegal argument, the 'createPaymentInput' must not be 'null'.");
-    }
 
     if (null == createPaymentInput.payerReference() || createPaymentInput.payerReference().isBlank()) {
       throw new PaymentInputException("The value for 'payerReference' is required.");

@@ -39,10 +39,11 @@ class PaymentUpdaterTest {
 
   @BeforeEach
   void setUp() {
-    Mockito.when(jsonTransformationPortOut.toJson(ArgumentMatchers.any())).thenReturn("{}");
     paymentUpdater = new PaymentUpdater(
-      loggingPortOut, jsonTransformationPortOut,
-      Mappers.getMapper(UpdatePaymentPortInMapper.class), paymentPersistencePortOut);
+      loggingPortOut,
+      jsonTransformationPortOut,
+      Mappers.getMapper(UpdatePaymentPortInMapper.class),
+      paymentPersistencePortOut);
   }
 
   @Test

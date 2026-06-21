@@ -37,10 +37,11 @@ class PaymentAllRetrieverTest {
 
   @BeforeEach
   void setUp() {
-    Mockito.when(jsonTransformationPortOut.toJson(ArgumentMatchers.any())).thenReturn("{}");
     paymentAllRetriever = new PaymentAllRetriever(
-      loggingPortOut, jsonTransformationPortOut,
-      Mappers.getMapper(RetrieveAllPaymentsPortInMapper.class), paymentPersistencePortOut);
+      loggingPortOut,
+      jsonTransformationPortOut,
+      Mappers.getMapper(RetrieveAllPaymentsPortInMapper.class),
+      paymentPersistencePortOut);
   }
 
   @Test
@@ -54,7 +55,7 @@ class PaymentAllRetrieverTest {
     var captor = ArgumentCaptor.forClass(Page.class);
     Mockito.when(paymentPersistencePortOut.retrieveAll(captor.capture())).thenReturn(pagedResult);
 
-    var result = paymentAllRetriever.execute(new RetrieveAllPaymentsInput(0, 10));
+    var result = paymentAllRetriever.execute(new RetrieveAllPaymentsInput("0", "10"));
 
     Assertions.assertEquals(1, result.payments().getContent().size());
     Assertions.assertEquals("ref-1", result.payments().getContent().get(0).getPaymentReference());
@@ -72,7 +73,7 @@ class PaymentAllRetrieverTest {
       .setTotalPages(0);
     Mockito.when(paymentPersistencePortOut.retrieveAll(ArgumentMatchers.any(Page.class))).thenReturn(pagedResult);
 
-    var result = paymentAllRetriever.execute(new RetrieveAllPaymentsInput(1, 20));
+    var result = paymentAllRetriever.execute(new RetrieveAllPaymentsInput("1", "20"));
 
     Assertions.assertTrue(result.payments().getContent().isEmpty());
     Assertions.assertEquals(0L, result.payments().getTotalElements());
