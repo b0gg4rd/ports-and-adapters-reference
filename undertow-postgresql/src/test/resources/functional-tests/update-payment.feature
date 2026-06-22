@@ -16,9 +16,8 @@ Feature: operative update-payment
         "a3": "2030-12-31T12:00:00"
       }
       """
-    When method PUT
-    Then status 200
-    And match responseHeaders['a0'][0] == '#uuid'
+    When method PATCH
+    Then status 204
 
   Scenario: Case 02: Failure - Should return 404 if the "payment" does not exist
     Given path '/payments/17a5d895-2f44-4870-9478-14900cfe75f9'
@@ -28,7 +27,7 @@ Feature: operative update-payment
         "a1": 200.00
       }
       """
-    When method PUT
+    When method PATCH
     Then status 404
 
   Scenario: Case 03: Failure - Should return 400 if a1 is negative
@@ -39,5 +38,16 @@ Feature: operative update-payment
         "a1": -50.00
       }
       """
-    When method PUT
+    When method PATCH
     Then status 400
+
+  Scenario: Case 04: Failure - Should return 409 if the "payment" status is not PENDING
+    Given path '/payments/17a5d895-2f44-4870-9478-14900cfe7000'
+    And request
+      """
+      {
+        "a1": 200.00
+      }
+      """
+    When method PATCH
+    Then status 409

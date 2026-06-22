@@ -3,12 +3,14 @@ package net.coatli.reference.portsandadapters.application.core;
 import net.coatli.reference.portsandadapters.application.port.in.UpdatePaymentPortIn;
 import net.coatli.reference.portsandadapters.application.port.in.exception.PaymentInputException;
 import net.coatli.reference.portsandadapters.application.port.in.exception.PaymentNotFoundException;
+import net.coatli.reference.portsandadapters.application.port.in.exception.PaymentStateException;
 import net.coatli.reference.portsandadapters.application.port.in.model.UpdatePaymentInput;
 import net.coatli.reference.portsandadapters.application.port.in.model.UpdatePaymentOutput;
 import net.coatli.reference.portsandadapters.application.port.in.model.mapper.UpdatePaymentPortInMapper;
 import net.coatli.reference.portsandadapters.application.port.out.logging.LoggingPortOut;
 import net.coatli.reference.portsandadapters.application.port.out.persistence.PaymentPersistencePortOut;
 import net.coatli.reference.portsandadapters.application.port.out.transformation.JsonTransformationPortOut;
+import net.coatli.reference.portsandadapters.domain.enums.PaymentStatus;
 import net.coatli.reference.portsandadapters.domain.model.Payment;
 import lombok.RequiredArgsConstructor;
 
@@ -39,6 +41,8 @@ public class PaymentUpdater implements UpdatePaymentPortIn {
       .orElseThrow(() -> new PaymentNotFoundException(
         "Payment not found for paymentReference: " + updatePaymentInput.paymentReference()));
 
+    validatePaymentState(payment);
+
     applyUpdates(updatePaymentInput, payment);
 
     return updatePaymentPortInMapper.mappingPayment2UpdatePaymentOutput(
@@ -53,6 +57,14 @@ public class PaymentUpdater implements UpdatePaymentPortIn {
 
     PaymentValidations.requireValidUUID(updatePaymentInput.paymentReference());
     PaymentValidations.requireFutureOrAbsentDate(updatePaymentInput.executionDate());
+  }
+
+  private void validatePaymentState(final Payment payment) {
+
+    if (PaymentStatus.PENDING != payment.getStatus()) {
+      throw new PaymentStateException(
+        "Cannot update payment with status '" + payment.getStatus() + "'");
+    }
   }
 
   private void applyUpdates(final UpdatePaymentInput updatePaymentInput, final Payment payment) {

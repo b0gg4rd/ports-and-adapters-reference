@@ -32,7 +32,7 @@ public class RoutesConfig {
           "/api/v1/payments",
           feather.instance(RetrieveAllPaymentsHandler.class))
         .add(
-          Methods.PUT,
+          Methods.PATCH,
           "/api/v1/payments/{a0}",
           feather.instance(UpdatePaymentHandler.class))
         .add(

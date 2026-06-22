@@ -170,21 +170,13 @@ public class PostgresqlPaymentPersistenceAdapter implements PaymentPersistencePo
       "[persistence.payment.delete] input: '{}'",
       paymentReference);
 
-    try (final var sqlSession = sqlSessionFactory.openSession(true)) {
+    try (final var sqlSession = sqlSessionFactory.openSession()) {
 
       final var rows = sqlSession
         .getMapper(MyBatisPaymentMapper.class)
         .delete(paymentReference);
 
-      if (NOT_FOUND_DELETE == rows) {
-
-        loggingPortOut.info(
-          this.getClass(),
-          "[persistence.payment.delete] not found");
-
-        throw new PaymentNotFoundException(paymentReference);
-
-      } else if (SUCCESS_DELETE == rows) {
+      if (SUCCESS_DELETE == rows) {
 
         sqlSession.commit();
 

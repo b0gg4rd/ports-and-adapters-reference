@@ -16,10 +16,6 @@ public class UndertowHeaderUtils {
 
   public static final String TEXT_PLAIN_UTF8 = "text/plain; charset=utf-8";
 
-  public static final String X_TRACE_ID = "X-T";
-
-  public static final HttpString X_TRACE_ID_HTTPSTRING = new HttpString(X_TRACE_ID);
-
   public static String getHeader(final HttpServerExchange httpServerExchange,
                                  final String             name) {
 
@@ -77,12 +73,6 @@ public class UndertowHeaderUtils {
       .put(
         name,
         String.valueOf(value).trim());
-
-  }
-
-  public static String retrieveTraceId(final HttpServerExchange exchange) {
-
-    return getHeader(exchange, X_TRACE_ID);
 
   }
 

@@ -2,11 +2,13 @@ package net.coatli.reference.portsandadapters.application.core;
 
 import net.coatli.reference.portsandadapters.application.port.in.exception.PaymentInputException;
 import net.coatli.reference.portsandadapters.application.port.in.exception.PaymentNotFoundException;
+import net.coatli.reference.portsandadapters.application.port.in.exception.PaymentStateException;
 import net.coatli.reference.portsandadapters.application.port.in.model.UpdatePaymentInput;
 import net.coatli.reference.portsandadapters.application.port.in.model.mapper.UpdatePaymentPortInMapper;
 import net.coatli.reference.portsandadapters.application.port.out.logging.LoggingPortOut;
 import net.coatli.reference.portsandadapters.application.port.out.persistence.PaymentPersistencePortOut;
 import net.coatli.reference.portsandadapters.application.port.out.transformation.JsonTransformationPortOut;
+import net.coatli.reference.portsandadapters.domain.enums.PaymentStatus;
 import net.coatli.reference.portsandadapters.domain.model.Payment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -51,7 +53,7 @@ class PaymentUpdaterTest {
   void case01() {
     var uuid = "550e8400-e29b-41d4-a716-446655440000";
     var input = new UpdatePaymentInput(uuid, null, null, null);
-    var payment = new Payment().setPaymentReference(uuid);
+    var payment = new Payment().setPaymentReference(uuid).setStatus(PaymentStatus.PENDING);
     Mockito.when(paymentPersistencePortOut.findByPaymentReference(uuid))
       .thenReturn(Optional.of(payment));
     Mockito.when(paymentPersistencePortOut.update(payment)).thenReturn(payment);
@@ -67,7 +69,7 @@ class PaymentUpdaterTest {
     var uuid = "550e8400-e29b-41d4-a716-446655440000";
     var newAmount = new BigDecimal("250.00");
     var input = new UpdatePaymentInput(uuid, newAmount, null, null);
-    var payment = new Payment().setPaymentReference(uuid);
+    var payment = new Payment().setPaymentReference(uuid).setStatus(PaymentStatus.PENDING);
     Mockito.when(paymentPersistencePortOut.findByPaymentReference(uuid))
       .thenReturn(Optional.of(payment));
     Mockito.when(paymentPersistencePortOut.update(payment)).thenReturn(payment);
@@ -82,7 +84,7 @@ class PaymentUpdaterTest {
   void case03() {
     var uuid = "550e8400-e29b-41d4-a716-446655440000";
     var input = new UpdatePaymentInput(uuid, null, "new subject", null);
-    var payment = new Payment().setPaymentReference(uuid);
+    var payment = new Payment().setPaymentReference(uuid).setStatus(PaymentStatus.PENDING);
     Mockito.when(paymentPersistencePortOut.findByPaymentReference(uuid))
       .thenReturn(Optional.of(payment));
     Mockito.when(paymentPersistencePortOut.update(payment)).thenReturn(payment);
@@ -97,7 +99,7 @@ class PaymentUpdaterTest {
   void case04() {
     var uuid = "550e8400-e29b-41d4-a716-446655440000";
     var input = new UpdatePaymentInput(uuid, null, "   ", null);
-    var payment = new Payment().setPaymentReference(uuid).setPaymentSubject("original");
+    var payment = new Payment().setPaymentReference(uuid).setStatus(PaymentStatus.PENDING).setPaymentSubject("original");
     Mockito.when(paymentPersistencePortOut.findByPaymentReference(uuid))
       .thenReturn(Optional.of(payment));
     Mockito.when(paymentPersistencePortOut.update(payment)).thenReturn(payment);
@@ -113,7 +115,7 @@ class PaymentUpdaterTest {
     var uuid = "550e8400-e29b-41d4-a716-446655440000";
     var futureDate = LocalDateTime.now().plusDays(1);
     var input = new UpdatePaymentInput(uuid, null, null, futureDate);
-    var payment = new Payment().setPaymentReference(uuid);
+    var payment = new Payment().setPaymentReference(uuid).setStatus(PaymentStatus.PENDING);
     Mockito.when(paymentPersistencePortOut.findByPaymentReference(uuid))
       .thenReturn(Optional.of(payment));
     Mockito.when(paymentPersistencePortOut.update(payment)).thenReturn(payment);
@@ -165,7 +167,7 @@ class PaymentUpdaterTest {
   void case11() {
     var uuid = "550e8400-e29b-41d4-a716-446655440000";
     var input = new UpdatePaymentInput(uuid, BigDecimal.ZERO, null, null);
-    var payment = new Payment().setPaymentReference(uuid);
+    var payment = new Payment().setPaymentReference(uuid).setStatus(PaymentStatus.PENDING);
     Mockito.when(paymentPersistencePortOut.findByPaymentReference(uuid))
       .thenReturn(Optional.of(payment));
     Assertions.assertThrows(PaymentInputException.class, () -> paymentUpdater.execute(input));
@@ -176,6 +178,49 @@ class PaymentUpdaterTest {
   void case12() {
     var input = new UpdatePaymentInput("invalid-uuid", null, null, null);
     Assertions.assertThrows(PaymentInputException.class, () -> paymentUpdater.execute(input));
+  }
+
+  @Test
+  @DisplayName("Case 13: Failure - Given payment with COMPLETED status, When execute, Then throws PaymentStateException")
+  void case13() {
+    var uuid = "550e8400-e29b-41d4-a716-446655440000";
+    var input = new UpdatePaymentInput(uuid, new BigDecimal("100.00"), null, null);
+    var payment = new Payment()
+      .setPaymentReference(uuid)
+      .setStatus(PaymentStatus.COMPLETED);
+
+    Mockito.when(paymentPersistencePortOut.findByPaymentReference(uuid))
+      .thenReturn(Optional.of(payment));
+
+    Assertions.assertThrows(PaymentStateException.class, () -> paymentUpdater.execute(input));
+  }
+
+  @Test
+  @DisplayName("Case 14: Failure - Given payment with null status, When execute, Then throws PaymentStateException")
+  void case14() {
+    var uuid = "550e8400-e29b-41d4-a716-446655440000";
+    var input = new UpdatePaymentInput(uuid, null, null, null);
+    var payment = new Payment().setPaymentReference(uuid);
+
+    Mockito.when(paymentPersistencePortOut.findByPaymentReference(uuid))
+      .thenReturn(Optional.of(payment));
+
+    Assertions.assertThrows(PaymentStateException.class, () -> paymentUpdater.execute(input));
+  }
+
+  @Test
+  @DisplayName("Case 15: Failure - Given payment with FAILED status, When execute, Then throws PaymentStateException")
+  void case15() {
+    var uuid = "550e8400-e29b-41d4-a716-446655440001";
+    var input = new UpdatePaymentInput(uuid, null, "new subject", null);
+    var payment = new Payment()
+      .setPaymentReference(uuid)
+      .setStatus(PaymentStatus.FAILED);
+
+    Mockito.when(paymentPersistencePortOut.findByPaymentReference(uuid))
+      .thenReturn(Optional.of(payment));
+
+    Assertions.assertThrows(PaymentStateException.class, () -> paymentUpdater.execute(input));
   }
 
 }

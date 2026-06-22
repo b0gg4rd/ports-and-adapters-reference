@@ -3,6 +3,7 @@ package net.coatli.reference.portsandadapters.infrastructure.bootstrap;
 import net.coatli.reference.portsandadapters.application.port.out.logging.LoggingPortOut;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.config.ExceptionConfig;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.config.RoutesConfig;
+import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.util.TraceIdHandler;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.util.UndertowAppUtils;
 import net.coatli.reference.portsandadapters.infrastructure.bootstrap.di.ApplicationCoreModule;
 import net.coatli.reference.portsandadapters.infrastructure.bootstrap.di.InfrastructureAdapterInModule;
@@ -27,11 +28,13 @@ public class PaymentBootstrap {
       loggingPortOut,
       PaymentBootstrap.class,
       new BlockingHandler(
-        ExceptionConfig.setup(
-          RoutesConfig.routes(FEATHER),
+        new TraceIdHandler(
+          ExceptionConfig.setup(
+            RoutesConfig.routes(FEATHER),
+            loggingPortOut,
+            PaymentBootstrap.class),
           loggingPortOut,
-          PaymentBootstrap.class
-          )));
+          PaymentBootstrap.class)));
 
   }
 

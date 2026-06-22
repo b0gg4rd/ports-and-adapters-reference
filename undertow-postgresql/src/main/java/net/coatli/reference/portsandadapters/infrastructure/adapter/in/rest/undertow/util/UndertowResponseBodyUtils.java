@@ -193,4 +193,27 @@ public class UndertowResponseBodyUtils {
 
   }
 
+  public static void createConflictResponse(final HttpServerExchange httpServerExchange,
+                                            final LoggingPortOut     loggingPortOut,
+                                            final Class<?>           caller,
+                                            final Throwable          exception) {
+
+    loggingPortOut.error(
+      caller,
+      "[rest.response.conflict] output: '{} {}'",
+      StatusCodes.CONFLICT,
+      exception.toString(),
+      exception);
+
+    UndertowHeaderUtils.putResponseHeader(
+      httpServerExchange,
+      Headers.CONTENT_TYPE,
+      UndertowHeaderUtils.TEXT_PLAIN_UTF8);
+
+    httpServerExchange
+      .setStatusCode(StatusCodes.CONFLICT)
+      .endExchange();
+
+  }
+
 }

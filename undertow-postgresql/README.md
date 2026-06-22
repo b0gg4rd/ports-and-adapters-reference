@@ -79,12 +79,7 @@ src/main/java/net/coatli/reference/portsandadapters/
     │   │           ├── CreatePaymentRequest.java
     │   │           ├── UpdatePaymentRequest.java
     │   │           ├── RetrieveAllPaymentsResponse.java
-    │   │           ├── RetrieveAllPaymentsItemResponse.java
-    │   │           └── mapper/
-    │   │               ├── CreatePaymentHandlerMapper.java
-    │   │               ├── RetrieveAllPaymentsHandlerMapper.java
-    │   │               ├── UpdatePaymentHandlerMapper.java
-    │   │               └── DeletePaymentHandlerMapper.java
+    │   │           └── RetrieveAllPaymentsItemResponse.java
     │   └── out/
     │       ├── logging/slf4j/
     │       │   └── Slf4jLoggingAdapter.java

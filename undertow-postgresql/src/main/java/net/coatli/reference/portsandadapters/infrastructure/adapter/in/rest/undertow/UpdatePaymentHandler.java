@@ -67,12 +67,10 @@ public class UpdatePaymentHandler implements HttpHandler {
       "[rest.payment.update] output: '{}'",
       jsonTransformationPortOut.toJson(updatePaymentOutput));
 
-    UndertowResponseBodyUtils.createOkWithHeaderResponse(
+    UndertowResponseBodyUtils.createNoContentResponse(
       httpServerExchange,
       loggingPortOut,
-      this.getClass(),
-      PAYMENT_REFERENCE,
-      updatePaymentOutput.paymentReference());
+      this.getClass());
 
   }
 
