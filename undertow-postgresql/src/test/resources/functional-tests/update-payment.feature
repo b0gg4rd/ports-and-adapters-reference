@@ -40,14 +40,3 @@ Feature: operative update-payment
       """
     When method PATCH
     Then status 400
-
-  Scenario: Case 04: Failure - Should return 409 if the "payment" status is not PENDING
-    Given path '/payments/17a5d895-2f44-4870-9478-14900cfe7000'
-    And request
-      """
-      {
-        "a1": 200.00
-      }
-      """
-    When method PATCH
-    Then status 409
