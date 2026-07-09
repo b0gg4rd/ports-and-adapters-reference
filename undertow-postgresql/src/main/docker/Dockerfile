@@ -1,7 +1,7 @@
 FROM ${docker.image.base}
 
-COPY artifact/${project.build.finalName}.${project.packaging} .
+COPY artifact/${project.build.finalName} .
 
-ENTRYPOINT ["java","-Xmx64m","-Xms32m","-XX:MaxMetaspaceSize=24m","-XX:+UseSerialGC","-XX:+UseCompressedOops","-XX:MaxRAMPercentage=50","--enable-preview","-Duser.timezone=America/Mexico_City","-jar","${project.build.finalName}.${project.packaging}"]
+ENTRYPOINT ["./${project.build.finalName}"]
 
 EXPOSE ${application.port}

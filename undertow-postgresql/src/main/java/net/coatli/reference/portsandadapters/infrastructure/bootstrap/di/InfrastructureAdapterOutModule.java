@@ -8,29 +8,32 @@ import net.coatli.reference.portsandadapters.infrastructure.adapter.out.persiste
 import net.coatli.reference.portsandadapters.infrastructure.adapter.out.persistence.postgresql.mybatis.MyBatisPaymentMapper;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.out.persistence.postgresql.mybatis.model.PaymentRow;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.out.persistence.postgresql.mybatis.model.mapper.PostgresqlPaymentPersistenceMapper;
-import net.coatli.reference.portsandadapters.infrastructure.adapter.out.transformation.jsoniter.JsoniterJsonTransformationAdapter;
+import net.coatli.reference.portsandadapters.infrastructure.adapter.out.persistence.postgresql.mybatis.model.mapper.PostgresqlPaymentPersistenceMapperImpl;
+import net.coatli.reference.portsandadapters.infrastructure.adapter.out.transformation.avajejsonb.AvajeJsonbTransformationAdapter;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import dagger.Module;
+import dagger.Provides;
+import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
-import org.codejargon.feather.Provides;
-import org.mapstruct.factory.Mappers;
 
 import javax.inject.Singleton;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.Properties;
 
+@Module
 public class InfrastructureAdapterOutModule {
 
   @Provides
   @Singleton
   public JsonTransformationPortOut jsonTransformationPortOut() {
 
-    return new JsoniterJsonTransformationAdapter();
+    return new AvajeJsonbTransformationAdapter();
 
   }
 
@@ -66,6 +69,8 @@ public class InfrastructureAdapterOutModule {
   @Singleton
   public Configuration configuration(final DataSource dataSource) {
 
+    LogFactory.useSlf4jLogging();
+
     final var configuration = new Configuration(
       new Environment(
         "production",
@@ -98,7 +103,7 @@ public class InfrastructureAdapterOutModule {
   @Singleton
   public PostgresqlPaymentPersistenceMapper postgresqlPaymentPersistenceMapper() {
 
-    return Mappers.getMapper(PostgresqlPaymentPersistenceMapper.class);
+    return new PostgresqlPaymentPersistenceMapperImpl();
 
   }
 

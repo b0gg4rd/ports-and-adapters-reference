@@ -1,21 +1,26 @@
 package net.coatli.reference.portsandadapters.infrastructure.bootstrap.di;
 
 import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.model.mapper.CreatePaymentHandlerMapper;
+import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.model.mapper.CreatePaymentHandlerMapperImpl;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.model.mapper.DeletePaymentHandlerMapper;
+import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.model.mapper.DeletePaymentHandlerMapperImpl;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.model.mapper.RetrieveAllPaymentsHandlerMapper;
+import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.model.mapper.RetrieveAllPaymentsHandlerMapperImpl;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.model.mapper.UpdatePaymentHandlerMapper;
-import org.codejargon.feather.Provides;
-import org.mapstruct.factory.Mappers;
+import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.model.mapper.UpdatePaymentHandlerMapperImpl;
+import dagger.Module;
+import dagger.Provides;
 
 import javax.inject.Singleton;
 
+@Module
 public class InfrastructureAdapterInModule {
 
   @Provides
   @Singleton
   public CreatePaymentHandlerMapper createPaymentHandlerMapper() {
 
-    return Mappers.getMapper(CreatePaymentHandlerMapper.class);
+    return new CreatePaymentHandlerMapperImpl();
 
   }
 
@@ -23,7 +28,7 @@ public class InfrastructureAdapterInModule {
   @Singleton
   public RetrieveAllPaymentsHandlerMapper retrieveAllPaymentsHandlerMapper() {
 
-    return Mappers.getMapper(RetrieveAllPaymentsHandlerMapper.class);
+    return new RetrieveAllPaymentsHandlerMapperImpl();
 
   }
 
@@ -31,7 +36,7 @@ public class InfrastructureAdapterInModule {
   @Singleton
   public UpdatePaymentHandlerMapper updatePaymentHandlerMapper() {
 
-    return Mappers.getMapper(UpdatePaymentHandlerMapper.class);
+    return new UpdatePaymentHandlerMapperImpl();
 
   }
 
@@ -39,7 +44,7 @@ public class InfrastructureAdapterInModule {
   @Singleton
   public DeletePaymentHandlerMapper deletePaymentHandlerMapper() {
 
-    return Mappers.getMapper(DeletePaymentHandlerMapper.class);
+    return new DeletePaymentHandlerMapperImpl();
 
   }
 

@@ -9,24 +9,29 @@ import net.coatli.reference.portsandadapters.application.port.in.DeletePaymentPo
 import net.coatli.reference.portsandadapters.application.port.in.RetrieveAllPaymentsPortIn;
 import net.coatli.reference.portsandadapters.application.port.in.UpdatePaymentPortIn;
 import net.coatli.reference.portsandadapters.application.port.in.model.mapper.CreatePaymentPortInMapper;
+import net.coatli.reference.portsandadapters.application.port.in.model.mapper.CreatePaymentPortInMapperImpl;
 import net.coatli.reference.portsandadapters.application.port.in.model.mapper.DeletePaymentPortInMapper;
+import net.coatli.reference.portsandadapters.application.port.in.model.mapper.DeletePaymentPortInMapperImpl;
 import net.coatli.reference.portsandadapters.application.port.in.model.mapper.RetrieveAllPaymentsPortInMapper;
+import net.coatli.reference.portsandadapters.application.port.in.model.mapper.RetrieveAllPaymentsPortInMapperImpl;
 import net.coatli.reference.portsandadapters.application.port.in.model.mapper.UpdatePaymentPortInMapper;
+import net.coatli.reference.portsandadapters.application.port.in.model.mapper.UpdatePaymentPortInMapperImpl;
 import net.coatli.reference.portsandadapters.application.port.out.logging.LoggingPortOut;
 import net.coatli.reference.portsandadapters.application.port.out.persistence.PaymentPersistencePortOut;
 import net.coatli.reference.portsandadapters.application.port.out.transformation.JsonTransformationPortOut;
-import org.codejargon.feather.Provides;
-import org.mapstruct.factory.Mappers;
+import dagger.Module;
+import dagger.Provides;
 
 import javax.inject.Singleton;
 
+@Module(includes = {InfrastructureAdapterOutModule.class, InfrastructureAdapterInModule.class})
 public class ApplicationCoreModule {
 
   @Provides
   @Singleton
   public CreatePaymentPortInMapper createPaymentPortInMapper() {
 
-    return Mappers.getMapper(CreatePaymentPortInMapper.class);
+    return new CreatePaymentPortInMapperImpl();
 
   }
 
@@ -34,7 +39,7 @@ public class ApplicationCoreModule {
   @Singleton
   public RetrieveAllPaymentsPortInMapper retrieveAllPaymentsPortInMapper() {
 
-    return Mappers.getMapper(RetrieveAllPaymentsPortInMapper.class);
+    return new RetrieveAllPaymentsPortInMapperImpl();
 
   }
 
@@ -42,7 +47,7 @@ public class ApplicationCoreModule {
   @Singleton
   public UpdatePaymentPortInMapper updatePaymentPortInMapper() {
 
-    return Mappers.getMapper(UpdatePaymentPortInMapper.class);
+    return new UpdatePaymentPortInMapperImpl();
 
   }
 
@@ -50,7 +55,7 @@ public class ApplicationCoreModule {
   @Singleton
   public DeletePaymentPortInMapper deletePaymentPortInMapper() {
 
-    return Mappers.getMapper(DeletePaymentPortInMapper.class);
+    return new DeletePaymentPortInMapperImpl();
 
   }
 

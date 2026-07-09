@@ -1,10 +1,11 @@
 package net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.model;
 
-import com.jsoniter.annotation.JsonCreator;
+import io.avaje.jsonb.Json;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Json
 public record UpdatePaymentRequest(
 
   BigDecimal a1,
@@ -12,9 +13,5 @@ public record UpdatePaymentRequest(
   String a2,
 
   LocalDateTime a3) {
-
-  @JsonCreator
-  public UpdatePaymentRequest {
-  }
 
 }

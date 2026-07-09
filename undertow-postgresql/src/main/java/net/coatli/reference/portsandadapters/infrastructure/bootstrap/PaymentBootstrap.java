@@ -1,39 +1,30 @@
 package net.coatli.reference.portsandadapters.infrastructure.bootstrap;
 
-import net.coatli.reference.portsandadapters.application.port.out.logging.LoggingPortOut;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.config.ExceptionConfig;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.config.RoutesConfig;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.util.TraceIdHandler;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.util.UndertowAppUtils;
-import net.coatli.reference.portsandadapters.infrastructure.bootstrap.di.ApplicationCoreModule;
-import net.coatli.reference.portsandadapters.infrastructure.bootstrap.di.InfrastructureAdapterInModule;
-import net.coatli.reference.portsandadapters.infrastructure.bootstrap.di.InfrastructureAdapterOutModule;
+import net.coatli.reference.portsandadapters.infrastructure.bootstrap.di.DaggerApplicationComponent;
 import io.undertow.server.handlers.BlockingHandler;
 import lombok.experimental.UtilityClass;
-import org.codejargon.feather.Feather;
 
 @UtilityClass
 public class PaymentBootstrap {
 
-  private static final Feather FEATHER = Feather.with(
-    new InfrastructureAdapterInModule(),
-    new InfrastructureAdapterOutModule(),
-    new ApplicationCoreModule());
-
   static void main(final String[] args) throws Exception {
 
-    final var loggingPortOut = FEATHER.instance(LoggingPortOut.class);
+    final var paymentComponent = DaggerApplicationComponent.create();
 
     UndertowAppUtils.buildAndStart(
-      loggingPortOut,
+      paymentComponent.loggingPortOut(),
       PaymentBootstrap.class,
       new BlockingHandler(
         new TraceIdHandler(
           ExceptionConfig.setup(
-            RoutesConfig.routes(FEATHER),
-            loggingPortOut,
+            RoutesConfig.routes(paymentComponent),
+            paymentComponent.loggingPortOut(),
             PaymentBootstrap.class),
-          loggingPortOut,
+          paymentComponent.loggingPortOut(),
           PaymentBootstrap.class)));
 
   }

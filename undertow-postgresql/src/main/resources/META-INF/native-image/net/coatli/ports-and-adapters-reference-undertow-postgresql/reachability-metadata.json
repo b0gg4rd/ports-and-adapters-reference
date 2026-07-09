@@ -1,0 +1,155 @@
+{
+  "reflection": [
+    {
+      "type": {
+        "proxy": [
+          "net.coatli.reference.portsandadapters.infrastructure.adapter.out.persistence.postgresql.mybatis.MyBatisPaymentMapper"
+        ]
+      }
+    },
+    {
+      "type": "java.util.ArrayList",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.zaxxer.hikari.HikariConfig",
+      "methods": [
+        {
+          "name": "setDataSourceClassName",
+          "parameterTypes": ["java.lang.String"]
+        },
+        {
+          "name": "setAutoCommit",
+          "parameterTypes": ["boolean"]
+        },
+        {
+          "name": "setMaximumPoolSize",
+          "parameterTypes": ["int"]
+        }
+      ]
+    },
+    {
+      "type": "org.postgresql.ds.PGSimpleDataSource",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setUrl",
+          "parameterTypes": ["java.lang.String"]
+        },
+        {
+          "name": "setUser",
+          "parameterTypes": ["java.lang.String"]
+        },
+        {
+          "name": "setPassword",
+          "parameterTypes": ["java.lang.String"]
+        }
+      ]
+    },
+    {
+      "type": "org.postgresql.ds.common.BaseDataSource",
+      "methods": [
+        {
+          "name": "setPassword",
+          "parameterTypes": ["java.lang.String"]
+        },
+        {
+          "name": "setUser",
+          "parameterTypes": ["java.lang.String"]
+        },
+        {
+          "name": "setUrl",
+          "parameterTypes": ["java.lang.String"]
+        }
+      ]
+    },
+    {
+      "type": "net.coatli.reference.portsandadapters.infrastructure.adapter.out.persistence.postgresql.mybatis.model.PaymentRow",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.lang.String",
+            "java.lang.String",
+            "java.math.BigDecimal",
+            "java.lang.String",
+            "java.time.LocalDateTime",
+            "java.lang.String",
+            "java.time.LocalDateTime"
+          ]
+        },
+        {
+          "name": "id",
+          "parameterTypes": []
+        },
+        {
+          "name": "payerId",
+          "parameterTypes": []
+        },
+        {
+          "name": "payeeId",
+          "parameterTypes": []
+        },
+        {
+          "name": "amount",
+          "parameterTypes": []
+        },
+        {
+          "name": "subject",
+          "parameterTypes": []
+        },
+        {
+          "name": "executionDate",
+          "parameterTypes": []
+        },
+        {
+          "name": "status",
+          "parameterTypes": []
+        },
+        {
+          "name": "createdAt",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.apache.ibatis.logging.slf4j.Slf4jImpl",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": ["java.lang.String"]
+        }
+      ]
+    },
+    {
+      "type": "org.apache.ibatis.javassist.util.proxy.ProxyFactory"
+    },
+    {
+      "type": "org.apache.ibatis.scripting.xmltags.XMLLanguageDriver",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.apache.ibatis.scripting.defaults.RawLanguageDriver",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    }
+  ]
+}

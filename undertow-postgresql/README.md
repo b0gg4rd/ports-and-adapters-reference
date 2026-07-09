@@ -9,7 +9,7 @@ Infrastructure module implementing the **inbound** (Undertow REST) and **outboun
 | `GET`    | `/api/v1/ping`            | `ResponseCodeHandler.HANDLE_200` |
 | `POST`   | `/api/v1/payments`        | `CreatePaymentHandler`       |
 | `GET`    | `/api/v1/payments`        | `RetrieveAllPaymentsHandler` |
-| `PUT`    | `/api/v1/payments/{a0}`   | `UpdatePaymentHandler`       |
+| `PATCH`  | `/api/v1/payments/{a0}`   | `UpdatePaymentHandler`       |
 | `DELETE` | `/api/v1/payments/{a0}`   | `DeletePaymentHandler`       |
 
 ---
@@ -23,8 +23,8 @@ flowchart LR
   subgraph Infrastructure ["Infrastructure (Adapters)"]
     direction TB
     A_IN[Inbound Adapters\nCreatePaymentHandler\nRetrieveAllPaymentsHandler\nUpdatePaymentHandler\nDeletePaymentHandler]
-    A_OUT[Outbound Adapters\nPostgresqlPaymentPersistenceAdapter\nSlf4jLoggingAdapter\nJsoniterJsonTransformationAdapter]
-    FW[[Undertow · MyBatis · HikariCP · Jsoniter · Log4j2]]
+    A_OUT[Outbound Adapters\nPostgresqlPaymentPersistenceAdapter\nSlf4jLoggingAdapter\nDslJsonTransformationAdapter]
+    FW[[Undertow · MyBatis · HikariCP · DSL-JSON · Log4j2]]
   end
 
   subgraph Application ["Application (Ports)"]
@@ -91,12 +91,13 @@ src/main/java/net/coatli/reference/portsandadapters/
     │       │           ├── PaymentRow.java
     │       │           └── mapper/
     │       │               └── PostgresqlPaymentPersistenceMapper.java
-    │       └── transformation/jsoniter/
-    │           └── JsoniterJsonTransformationAdapter.java
+    │       └── transformation/dsljson/
+    │           └── AvajeJsonbTransformationAdapter.java
     └── bootstrap/
         ├── ApplicationProperties.java
         ├── PaymentBootstrap.java
         └── di/
+            ├── ApplicationComponent.java
             ├── ApplicationCoreModule.java
             ├── InfrastructureAdapterInModule.java
             └── InfrastructureAdapterOutModule.java
@@ -120,6 +121,7 @@ docker run \
   -v $(pwd):$(pwd) \
   -v ${HOME}/.m2:/root/.m2 \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  azul/zulu-openjdk-alpine:25.0.3 \
-  ./mvnw -Djansi.force=true -ntp -P local -U clean verify
+  --entrypoint ./mvnw \
+  ghcr.io/graalvm/native-image-community:25 \
+  -Djansi.force=true -ntp -P local -U clean verify
 ```

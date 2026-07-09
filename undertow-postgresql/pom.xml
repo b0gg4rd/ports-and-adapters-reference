@@ -33,15 +33,16 @@
     <jacoco.maven.plugin.version>0.8.14</jacoco.maven.plugin.version>
     <git.commit.id.maven.plugin.version>9.0.1</git.commit.id.maven.plugin.version>
     <maven.shade.plugin.version>3.6.0</maven.shade.plugin.version>
+    <native.maven.plugin.version>0.10.6</native.maven.plugin.version>
     <docker.maven.plugin.version>0.48.1</docker.maven.plugin.version>
 
     <ports.and.adapters.reference.core.version>1.0.0-SNAPSHOT</ports.and.adapters.reference.core.version>
-    <undertow.core.version>2.3.24.Final</undertow.core.version>
+    <undertow.core.version>2.4.1.Final</undertow.core.version>
+    <wildfly.common.version>1.7.0.Final</wildfly.common.version>
     <log4j.version>2.25.4</log4j.version>
-    <feather.version>1.0</feather.version>
+    <dagger.version>2.56.2</dagger.version>
     <uuid.creator.version>6.0.0</uuid.creator.version>
-    <jsoniter.version>0.9.23</jsoniter.version>
-    <javassist.version>3.29.0-GA</javassist.version>
+    <avaje.jsonb.version>3.3</avaje.jsonb.version>
     <hikaricp.version>7.0.2</hikaricp.version>
     <mybatis.version>3.5.15</mybatis.version>
     <postgres.version>42.7.10</postgres.version>
@@ -78,9 +79,14 @@
       <version>${undertow.core.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.codejargon.feather</groupId>
-      <artifactId>feather</artifactId>
-      <version>${feather.version}</version>
+      <groupId>org.wildfly.common</groupId>
+      <artifactId>wildfly-common</artifactId>
+      <version>${wildfly.common.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.dagger</groupId>
+      <artifactId>dagger</artifactId>
+      <version>${dagger.version}</version>
     </dependency>
     <dependency>
       <groupId>org.mapstruct</groupId>
@@ -100,14 +106,9 @@
       <version>${uuid.creator.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.jsoniter</groupId>
-      <artifactId>jsoniter</artifactId>
-      <version>${jsoniter.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.javassist</groupId>
-      <artifactId>javassist</artifactId>
-      <version>${javassist.version}</version>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-jsonb</artifactId>
+      <version>${avaje.jsonb.version}</version>
     </dependency>
     <dependency>
       <groupId>com.zaxxer</groupId>
@@ -260,6 +261,16 @@
               <artifactId>lombok-mapstruct-binding</artifactId>
               <version>${lombok.mapstruct.binding.version}</version>
             </path>
+            <path>
+              <groupId>io.avaje</groupId>
+              <artifactId>avaje-jsonb-generator</artifactId>
+              <version>${avaje.jsonb.version}</version>
+            </path>
+            <path>
+              <groupId>com.google.dagger</groupId>
+              <artifactId>dagger-compiler</artifactId>
+              <version>${dagger.version}</version>
+            </path>
           </annotationProcessorPaths>
         </configuration>
       </plugin>
@@ -312,6 +323,30 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.graalvm.buildtools</groupId>
+        <artifactId>native-maven-plugin</artifactId>
+        <version>${native.maven.plugin.version}</version>
+        <extensions>true</extensions>
+        <executions>
+          <execution>
+            <id>build-native</id>
+            <phase>package</phase>
+            <goals>
+              <goal>compile-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <imageName>${project.build.finalName}</imageName>
+          <mainClass>${main.class}</mainClass>
+          <buildArgs>
+            <buildArg>--enable-preview</buildArg>
+            <buildArg>-H:+ReportExceptionStackTraces</buildArg>
+            <buildArg>-H:+StaticExecutableWithDynamicLibC</buildArg>
+          </buildArgs>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>io.fabric8</groupId>
         <artifactId>docker-maven-plugin</artifactId>
         <version>${docker.maven.plugin.version}</version>
@@ -325,7 +360,7 @@
                 <dockerFileDir>${docker.image.dockerfiledir}</dockerFileDir>
                 <assembly>
                   <name>artifact</name>
-                  <descriptorRef>artifact</descriptorRef>
+                  <descriptor>${project.basedir}/src/main/assembly/native-artifact.xml</descriptor>
                 </assembly>
               </build>
             </image>

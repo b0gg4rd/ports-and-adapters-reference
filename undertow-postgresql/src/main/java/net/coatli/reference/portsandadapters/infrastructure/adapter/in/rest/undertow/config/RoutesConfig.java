@@ -1,20 +1,16 @@
 package net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.config;
 
-import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.CreatePaymentHandler;
-import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.DeletePaymentHandler;
-import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.RetrieveAllPaymentsHandler;
-import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.UpdatePaymentHandler;
+import net.coatli.reference.portsandadapters.infrastructure.bootstrap.di.ApplicationComponent;
 import io.undertow.Handlers;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.ResponseCodeHandler;
 import io.undertow.util.Methods;
 import lombok.experimental.UtilityClass;
-import org.codejargon.feather.Feather;
 
 @UtilityClass
 public class RoutesConfig {
 
-  public static HttpHandler routes(final Feather feather) {
+  public static HttpHandler routes(final ApplicationComponent paymentComponent) {
 
     return
       Handlers
@@ -26,19 +22,19 @@ public class RoutesConfig {
         .add(
           Methods.POST,
           "/api/v1/payments",
-          feather.instance(CreatePaymentHandler.class))
+          paymentComponent.createPaymentHandler())
         .add(
           Methods.GET,
           "/api/v1/payments",
-          feather.instance(RetrieveAllPaymentsHandler.class))
+          paymentComponent.retrieveAllPaymentsHandler())
         .add(
           Methods.PATCH,
           "/api/v1/payments/{a0}",
-          feather.instance(UpdatePaymentHandler.class))
+          paymentComponent.updatePaymentHandler())
         .add(
           Methods.DELETE,
           "/api/v1/payments/{a0}",
-          feather.instance(DeletePaymentHandler.class));
+          paymentComponent.deletePaymentHandler());
 
   }
 

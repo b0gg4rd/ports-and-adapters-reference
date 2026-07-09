@@ -111,6 +111,7 @@ docker run \
   -w $(pwd) \
   -v $(pwd):$(pwd) \
   -v ${HOME}/.m2:/root/.m2 \
-  azul/zulu-openjdk-alpine:25.0.3 \
-  ./mvnw -Djansi.force=true -ntp -U clean install
+  --entrypoint ./mvnw \
+  ghcr.io/graalvm/native-image-community:25 \
+  -Djansi.force=true -ntp -U clean install
 ```

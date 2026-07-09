@@ -44,7 +44,7 @@ public interface MyBatisPaymentMapper {
   List<PaymentRow> selectAll(@Param("size") int size, @Param("offset") int offset);
 
   @Select("SELECT COUNT(*) FROM payment")
-  long count();
+  long countPayments();
 
   @ConstructorArgs({
     @Arg(column = "id",             name = "id",            javaType = String.class),

@@ -1,8 +1,8 @@
 package net.coatli.reference.portsandadapters.infrastructure.adapter.out.persistence.postgresql;
 
-import net.coatli.reference.portsandadapters.application.port.in.exception.PaymentNotFoundException;
 import net.coatli.reference.portsandadapters.application.port.out.logging.LoggingPortOut;
 import net.coatli.reference.portsandadapters.application.port.out.persistence.PaymentPersistencePortOut;
+import net.coatli.reference.portsandadapters.application.port.out.persistence.exception.PaymentPersistenceException;
 import net.coatli.reference.portsandadapters.application.port.out.transformation.JsonTransformationPortOut;
 import net.coatli.reference.portsandadapters.domain.model.Page;
 import net.coatli.reference.portsandadapters.domain.model.Payment;
@@ -22,8 +22,6 @@ public class PostgresqlPaymentPersistenceAdapter implements PaymentPersistencePo
 
   private static final int SUCCESS_DELETE = 1;
 
-  private static final int NOT_FOUND_DELETE = 0;
-
   private final SqlSessionFactory sqlSessionFactory;
 
   private final PostgresqlPaymentPersistenceMapper postgresqlPaymentPersistenceMapper;
@@ -35,16 +33,18 @@ public class PostgresqlPaymentPersistenceAdapter implements PaymentPersistencePo
   @Override
   public Payment create(final Payment payment) {
 
+    final var paymentRow = postgresqlPaymentPersistenceMapper.mappingPayment2PaymentRow(payment);
+
     loggingPortOut.info(
       this.getClass(),
       "[persistence.payment.create] input: '{}'",
-      jsonTransformationPortOut.toJson(payment));
+      jsonTransformationPortOut.toJson(paymentRow));
 
     try (final var sqlSession = sqlSessionFactory.openSession()) {
 
       final var rows = sqlSession
         .getMapper(MyBatisPaymentMapper.class)
-        .insert(postgresqlPaymentPersistenceMapper.mappingPayment2PaymentRow(payment));
+        .insert(paymentRow);
 
       if (SUCCESS_INSERT == rows) {
 
@@ -62,7 +62,7 @@ public class PostgresqlPaymentPersistenceAdapter implements PaymentPersistencePo
           this.getClass(),
           "[persistence.payment.create] rollback: '{}'", rows);
 
-        throw new RuntimeException(String.format("Error creating payment, insert result '%s'", rows));
+        throw new PaymentPersistenceException(String.format("Error creating payment, insert result '%s'", rows));
 
       }
 
@@ -77,14 +77,15 @@ public class PostgresqlPaymentPersistenceAdapter implements PaymentPersistencePo
 
     loggingPortOut.info(
       this.getClass(),
-      "[persistence.payment.retrieve-all] input: '{}'",
-      jsonTransformationPortOut.toJson(page.getPagination()));
+      "[persistence.payment.retrieve-all] page '{}' size '{}'",
+      page.getPagination().getPage(),
+      page.getPagination().getSize());
 
     try (final var sqlSession = sqlSessionFactory.openSession(true)) {
 
       final var mapper = sqlSession.getMapper(MyBatisPaymentMapper.class);
 
-      final var totalElements = mapper.count();
+      final var totalElements = mapper.countPayments();
 
       return page
         .setContent(
@@ -125,16 +126,18 @@ public class PostgresqlPaymentPersistenceAdapter implements PaymentPersistencePo
   @Override
   public Payment update(final Payment payment) {
 
+    final var paymentRow = postgresqlPaymentPersistenceMapper.mappingPayment2PaymentRow(payment);
+
     loggingPortOut.info(
       this.getClass(),
       "[persistence.payment.update] input: '{}'",
-      jsonTransformationPortOut.toJson(payment));
+      jsonTransformationPortOut.toJson(paymentRow));
 
     try (final var sqlSession = sqlSessionFactory.openSession()) {
 
       final var rows = sqlSession
         .getMapper(MyBatisPaymentMapper.class)
-        .update(postgresqlPaymentPersistenceMapper.mappingPayment2PaymentRow(payment));
+        .update(paymentRow);
 
       if (SUCCESS_UPDATE == rows) {
 
@@ -154,7 +157,7 @@ public class PostgresqlPaymentPersistenceAdapter implements PaymentPersistencePo
           this.getClass(),
           "[persistence.payment.update] rollback: '{}'", rows);
 
-        throw new RuntimeException(String.format("Error updating payment, update result '%s'", rows));
+        throw new PaymentPersistenceException(String.format("Error updating payment, update result '%s'", rows));
 
       }
 
@@ -194,7 +197,7 @@ public class PostgresqlPaymentPersistenceAdapter implements PaymentPersistencePo
           this.getClass(),
           "[persistence.payment.delete] rollback: '{}'", rows);
 
-        throw new RuntimeException(String.format("Error deleting payment, delete result '%s'", rows));
+        throw new PaymentPersistenceException(String.format("Error deleting payment, delete result '%s'", rows));
 
       }
 
