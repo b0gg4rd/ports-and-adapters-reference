@@ -22,8 +22,6 @@ public class TraceIdHandler implements HttpHandler {
 
   private final LoggingPortOut loggingPortOut;
 
-  private final Class<?> caller;
-
   @Override
   public void handleRequest(final HttpServerExchange httpServerExchange) throws Exception {
 
@@ -36,7 +34,9 @@ public class TraceIdHandler implements HttpHandler {
 
     MDC.put(MDC_KEY, traceId);
 
-    loggingPortOut.info(caller, "[rest.trace] '{}' '{}' '{}'",
+    loggingPortOut.info(
+      this.getClass(),
+      "[rest.trace] '{}' '{}' '{}'",
       httpServerExchange.getRequestMethod(), httpServerExchange.getRequestPath(), traceId);
 
     httpServerExchange.addExchangeCompleteListener((exchange, nextListener) -> {

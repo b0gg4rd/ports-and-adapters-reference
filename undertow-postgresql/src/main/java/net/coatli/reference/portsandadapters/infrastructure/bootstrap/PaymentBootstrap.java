@@ -24,8 +24,7 @@ public class PaymentBootstrap {
             RoutesConfig.routes(paymentComponent),
             paymentComponent.loggingPortOut(),
             PaymentBootstrap.class),
-          paymentComponent.loggingPortOut(),
-          PaymentBootstrap.class)));
+          paymentComponent.loggingPortOut())));
 
   }
 
