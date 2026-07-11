@@ -52,16 +52,17 @@
     <lombok.mapstruct.binding.version>0.2.0</lombok.mapstruct.binding.version>
 
     <openapi.build.directory>${project.basedir}/src/main/openapi</openapi.build.directory>
+
     <docker.build.directory>${project.basedir}/src/main/docker</docker.build.directory>
     <docker.image.alias>${project.artifactId}</docker.image.alias>
     <docker.image.registry>ghcr.io/b0gg4rd</docker.image.registry>
     <docker.image.name>${project.artifactId}:${project.version}</docker.image.name>
-    <docker.image.dockerfiledir>${project.build.outputDirectory}</docker.image.dockerfiledir>
+    <docker.image.dockerfiledir>${project.build.outputDirectory}/docker</docker.image.dockerfiledir>
 
     <liquibase.logging>info</liquibase.logging>
     <liquibase.dropFirst>false</liquibase.dropFirst>
     <liquibase.build.directory>${project.basedir}/src/main/liquibase</liquibase.build.directory>
-    <liquibase.properties.file>${project.build.outputDirectory}/liquibase.properties</liquibase.properties.file>
+    <liquibase.properties.file>${project.build.outputDirectory}/liquibase/liquibase.properties</liquibase.properties.file>
   </properties>
 
   <dependencies>
@@ -147,14 +148,17 @@
       </resource>
       <resource>
         <directory>${openapi.build.directory}</directory>
+        <targetPath>openapi</targetPath>
         <filtering>true</filtering>
       </resource>
       <resource>
         <directory>${docker.build.directory}</directory>
+        <targetPath>docker</targetPath>
         <filtering>true</filtering>
       </resource>
       <resource>
         <directory>${liquibase.build.directory}</directory>
+        <targetPath>liquibase</targetPath>
         <filtering>true</filtering>
       </resource>
     </resources>
@@ -284,6 +288,8 @@
             <filter>
               <artifact>*:*</artifact>
               <excludes>
+                <exclude>docker/**</exclude>
+                <exclude>liquibase/**</exclude>
                 <exclude>META-INF/maven/**</exclude>
                 <exclude>module-info.class</exclude>
                 <exclude>META-INF/versions/*/module-info.class</exclude>
@@ -302,14 +308,6 @@
           <transformers>
             <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
               <mainClass>${main.class}</mainClass>
-            </transformer>
-            <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
-              <resources>
-                <resource>Dockerfile</resource>
-                <resource>changelogs/db.changelog-master.xml</resource>
-                <resource>liquibase.properties</resource>
-                <resource>log4j2-test.xml</resource>
-              </resources>
             </transformer>
           </transformers>
         </configuration>
@@ -425,13 +423,20 @@
                         <containerNamePattern>%a</containerNamePattern>
                         <volumes>
                           <bind>
-                            <volume>${project.build.outputDirectory}:/liquibase/changelog</volume>
+                            <volume>${project.build.outputDirectory}/liquibase:/liquibase/changelog</volume>
                           </bind>
                         </volumes>
                         <cmd>
                           <arg>--defaults-file=/liquibase/changelog/liquibase.properties</arg>
                           <arg>update</arg>
                         </cmd>
+                        <wait>
+                          <log>Liquibase command 'update' was executed successfully</log>
+                          <time>60000</time>
+                        </wait>
+                        <log>
+                          <enabled>true</enabled>
+                        </log>
                       </run>
                     </image>
                   </images>
