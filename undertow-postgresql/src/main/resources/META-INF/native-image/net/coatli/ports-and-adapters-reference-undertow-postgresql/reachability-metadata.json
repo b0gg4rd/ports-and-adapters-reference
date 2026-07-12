@@ -1,4 +1,7 @@
 {
+  "resources": [
+    { "glob": "openapi/**" }
+  ],
   "reflection": [
     {
       "type": {

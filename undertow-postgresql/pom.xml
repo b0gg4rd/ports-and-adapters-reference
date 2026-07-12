@@ -145,6 +145,16 @@
       <resource>
         <directory>${project.build.resourcesDirectory}</directory>
         <filtering>true</filtering>
+        <excludes>
+          <exclude>openapi/swagger-ui/**</exclude>
+        </excludes>
+      </resource>
+      <resource>
+        <directory>${project.build.resourcesDirectory}</directory>
+        <filtering>false</filtering>
+        <includes>
+          <include>openapi/swagger-ui/**</include>
+        </includes>
       </resource>
       <resource>
         <directory>${openapi.build.directory}</directory>

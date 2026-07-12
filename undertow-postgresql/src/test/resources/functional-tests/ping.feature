@@ -1,4 +1,4 @@
-Feature: ping-pong
+Feature: ping
 
   Background:
     * url ${functional-tests.server}

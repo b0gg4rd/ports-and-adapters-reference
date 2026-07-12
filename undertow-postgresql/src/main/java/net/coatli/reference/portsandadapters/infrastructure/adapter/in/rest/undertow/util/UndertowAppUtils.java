@@ -35,7 +35,7 @@ public class UndertowAppUtils {
 
     loggingPortOut.info(
       clazz,
-      "[rest.app.bootstrap] event=app_starting app={} commit={} version={} port={}",
+      "[app.bootstrap] event=app_starting app={} commit={} version={} port={}",
       ApplicationProperties.APPLICATION_PROPERTIES.get(NAME),
       ApplicationProperties.APPLICATION_PROPERTIES.get(COMMIT),
       ApplicationProperties.APPLICATION_PROPERTIES.get(VERSION),
@@ -47,7 +47,7 @@ public class UndertowAppUtils {
 
     loggingPortOut.info(
       clazz,
-      "[rest.app.bootstrap] event=app_started app={} commit={} version={} port={}",
+      "[app.bootstrap] event=app_started app={} commit={} version={} port={}",
       ApplicationProperties.APPLICATION_PROPERTIES.get(NAME),
       ApplicationProperties.APPLICATION_PROPERTIES.get(COMMIT),
       ApplicationProperties.APPLICATION_PROPERTIES.get(VERSION),

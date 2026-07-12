@@ -11,6 +11,8 @@ Infrastructure module implementing the **inbound** (Undertow REST) and **outboun
 | `GET`    | `/api/v1/payments`        | `RetrieveAllPaymentsHandler` |
 | `PATCH`  | `/api/v1/payments/{a0}`   | `UpdatePaymentHandler`       |
 | `DELETE` | `/api/v1/payments/{a0}`   | `DeletePaymentHandler`       |
+| `GET`    | `/openapi/payments.yml`  | `OpenApiHandlers.SPEC`        |
+| `GET`    | `/swagger-ui/`           | `OpenApiHandlers.SWAGGER_UI`  |
 
 ---
 

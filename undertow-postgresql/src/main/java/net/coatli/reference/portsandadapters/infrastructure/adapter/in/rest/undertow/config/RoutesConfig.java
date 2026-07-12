@@ -1,5 +1,6 @@
 package net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.config;
 
+import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.util.OpenApiHandlers;
 import net.coatli.reference.portsandadapters.infrastructure.bootstrap.di.ApplicationComponent;
 import io.undertow.Handlers;
 import io.undertow.server.HttpHandler;
@@ -34,7 +35,19 @@ public class RoutesConfig {
         .add(
           Methods.DELETE,
           "/api/v1/payments/{a0}",
-          paymentComponent.deletePaymentHandler());
+          paymentComponent.deletePaymentHandler())
+        .add(
+          Methods.GET,
+          "/openapi/*",
+          OpenApiHandlers.OPENAPI)
+        .add(
+          Methods.GET,
+          "/swagger-ui",
+          OpenApiHandlers.SWAGGER_UI_REDIRECT)
+        .add(
+          Methods.GET,
+          "/swagger-ui/*",
+          OpenApiHandlers.SWAGGER_UI);
 
   }
 
