@@ -20,6 +20,7 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
+      packages: read
       issues: read
       checks: write
       pull-requests: write
@@ -41,6 +42,8 @@ jobs:
         run: |
           chmod +x mvnw
           ./mvnw -Djansi.force=true -ntp -P functional -U clean verify
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Test report (detailed check)
         if: always()
@@ -120,7 +123,11 @@ jobs:
         run: |
           chmod +x mvnw
           ./mvnw -B -Djansi.force=true -ntp -P prod -U clean package docker:build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push Docker image
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: ./mvnw -B -Djansi.force=true -ntp -P prod docker:push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

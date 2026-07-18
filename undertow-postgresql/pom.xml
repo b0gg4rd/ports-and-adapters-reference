@@ -12,6 +12,14 @@
   <name>ports-and-adapters-reference-undertow-postgresql</name>
   <description>Ports And Adapters Reference - Undertow PostgreSQL</description>
 
+  <repositories>
+    <repository>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/b0gg4rd/ports-and-adapters-reference</url>
+    </repository>
+  </repositories>
+
   <properties>
     <java.version>25</java.version>
     <maven>3.9.14</maven>
