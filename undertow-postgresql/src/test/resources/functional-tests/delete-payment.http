@@ -1,0 +1,45 @@
+### Setup: create a payment to delete
+POST {{host}}/api/v1/payments
+Content-Type: application/json
+
+{
+  "a1": "payer-773899273774",
+  "a2": "payee-998877665544",
+  "a3": 100.00,
+  "a4": "Test payment",
+  "a5": "2030-12-31T10:00:00"
+}
+
+> {%
+client.test("Setup should return 201", function() {
+    client.assert(response.status === 201, "Expected status 201 but got " + response.status);
+});
+client.global.set("paymentReference", response.headers.valueOf("a0"));
+%}
+
+### Case 01: Success - Should return 204 when deleting a "payment"
+DELETE {{host}}/api/v1/payments/{{paymentReference}}
+
+> {%
+client.test("Should return 204", function() {
+    client.assert(response.status === 204, "Expected status 204 but got " + response.status);
+});
+%}
+
+### Case 02: Failure - Should return 404 if the "payment" does not exist
+DELETE {{host}}/api/v1/payments/17a5d895-2f44-4870-9478-14900cfe75f9
+
+> {%
+client.test("Should return 404", function() {
+    client.assert(response.status === 404, "Expected status 404 but got " + response.status);
+});
+%}
+
+### Case 03: Failure - Should return 400 if the "payment reference" is not a UUID
+DELETE {{host}}/api/v1/payments/dummy
+
+> {%
+client.test("Should return 400", function() {
+    client.assert(response.status === 400, "Expected status 400 but got " + response.status);
+});
+%}

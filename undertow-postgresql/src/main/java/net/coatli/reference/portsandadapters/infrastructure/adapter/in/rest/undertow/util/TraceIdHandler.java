@@ -34,14 +34,24 @@ public class TraceIdHandler implements HttpHandler {
 
     MDC.put(MDC_KEY, traceId);
 
+    final var startTime = System.nanoTime();
+
     loggingPortOut.info(
       this.getClass(),
-      "[rest.trace] '{}' '{}' '{}'",
+      "[rest.trace.start] '{}' '{}' traceId '{}'",
       httpServerExchange.getRequestMethod(), httpServerExchange.getRequestPath(), traceId);
 
     httpServerExchange.addExchangeCompleteListener((exchange, nextListener) -> {
+
+      loggingPortOut.info(
+        this.getClass(),
+        "[rest.trace.end] '{}' '{}' '{}' duration '{}'",
+        exchange.getRequestMethod(), exchange.getRequestPath(),
+        exchange.getStatusCode(), (System.nanoTime() - startTime) / 1_000_000);
+
       MDC.remove(MDC_KEY);
       nextListener.proceed();
+
     });
 
     next.handleRequest(httpServerExchange);

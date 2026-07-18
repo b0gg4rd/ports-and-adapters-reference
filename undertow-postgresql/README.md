@@ -2,17 +2,16 @@
 
 ## Overview
 
-Infrastructure module implementing the **inbound** (Undertow REST) and **outbound** (PostgreSQL/MyBatis) adapters for the `ports-and-adapters-reference-core`. It exposes a CRUD API for the `Payment` domain.
+Infrastructure module implementing the **inbound** (Undertow REST) and **outbound** (PostgreSQL/MyBatis) adapters for the `ports-and-adapters-reference-core`. It exposes an API for the `Payment` domain.
 
-| Method   | Path                      | Handler                      |
-|----------|---------------------------|------------------------------|
-| `GET`    | `/api/v1/ping`            | `ResponseCodeHandler.HANDLE_200` |
-| `POST`   | `/api/v1/payments`        | `CreatePaymentHandler`       |
-| `GET`    | `/api/v1/payments`        | `RetrieveAllPaymentsHandler` |
-| `PATCH`  | `/api/v1/payments/{a0}`   | `UpdatePaymentHandler`       |
-| `DELETE` | `/api/v1/payments/{a0}`   | `DeletePaymentHandler`       |
-| `GET`    | `/openapi/payments.yml`  | `OpenApiHandlers.SPEC`        |
-| `GET`    | `/swagger-ui/`           | `OpenApiHandlers.SWAGGER_UI`  |
+| Method   | Path                    | Handler                      |
+|----------|-------------------------|------------------------------|
+| `GET`    | `/api/v1/ping`          | `ResponseCodeHandler.HANDLE_200` |
+| `GET`    | `/swagger-ui/`          | `OpenApiHandlers.SWAGGER_UI`  |
+| `POST`   | `/api/v1/payments`      | `CreatePaymentHandler`       |
+| `GET`    | `/api/v1/payments`      | `RetrieveAllPaymentsHandler` |
+| `PATCH`  | `/api/v1/payments/{a0}` | `UpdatePaymentHandler`       |
+| `DELETE` | `/api/v1/payments/{a0}` | `DeletePaymentHandler`       |
 
 ---
 
@@ -113,7 +112,22 @@ src/main/java/net/coatli/reference/portsandadapters/
 
 - [Docker](https://docs.docker.com/engine/install/)
 
-### Run
+### Functional Tests
+
+```shell
+docker run \
+  --rm \
+  -w $(pwd) \
+  -v $(pwd)/..:$(pwd)/.. \
+  -v $(pwd):$(pwd) \
+  -v ${HOME}/.m2:/root/.m2 \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --entrypoint ./mvnw \
+  ghcr.io/graalvm/native-image-community:25 \
+  -Djansi.force=true -ntp -P functional -U clean verify
+```
+
+### Local Run
 
 ```shell
 docker run \

@@ -1,0 +1,20 @@
+### Case 01: Success - Should return 200 for "GET /swagger-ui/index.html"
+GET {{host}}/swagger-ui/index.html
+
+> {%
+client.test("Should return 200 with content-type text/html", function() {
+    client.assert(response.status === 200, "Expected status 200 but got " + response.status);
+    client.assert(response.headers.valueOf("Content-Type").includes("text/html"), "Expected Content-Type to contain text/html");
+});
+%}
+
+
+### Case 02: Success - Should return 200 for "GET /openapi/payments.yml"
+GET {{host}}/openapi/payments.yml
+
+> {%
+client.test("Should return 200 with content-type application/yaml", function() {
+    client.assert(response.status === 200, "Expected status 200 but got " + response.status);
+    client.assert(response.headers.valueOf("Content-Type").includes("application/yaml"), "Expected Content-Type to contain application/yaml");
+});
+%}

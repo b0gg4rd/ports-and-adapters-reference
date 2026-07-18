@@ -2,7 +2,46 @@
 <Configuration status="WARN">
   <Appenders>
     <Console name="console" target="SYSTEM_OUT">
-      <PatternLayout pattern="%d [%X{trace-id}] %p %c{1} [%t] %m %ex%n"/>
+      <JsonTemplateLayout>
+        <EventTemplate><![CDATA[
+        {
+          "timestamp": {
+            "$resolver": "timestamp",
+            "pattern": {
+              "format": "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
+              "timeZone": "UTC"
+            }
+          },
+          "level": {
+            "$resolver": "level",
+            "field": "name"
+          },
+          "logger": {
+            "$resolver": "logger",
+            "field": "name"
+          },
+          "thread": {
+            "$resolver": "thread",
+            "field": "name"
+          },
+          "trace_id": {
+            "$resolver": "mdc",
+            "key": "trace-id"
+          },
+          "message": {
+            "$resolver": "message",
+            "stringified": true
+          },
+          "exception": {
+            "$resolver": "exception",
+            "field": "stackTrace",
+            "stackTrace": {
+              "stringified": true
+            }
+          }
+        }
+        ]]></EventTemplate>
+      </JsonTemplateLayout>
     </Console>
   </Appenders>
   <Loggers>

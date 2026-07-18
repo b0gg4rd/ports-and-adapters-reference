@@ -1,0 +1,8 @@
+### Case 01: Success - Should return 200 for "ping"
+GET {{host}}/api/v1/ping
+
+> {%
+client.test("Should return 200 for GET /api/v1/ping", function() {
+    client.assert(response.status === 200, "Expected status 200 but got " + response.status);
+});
+%}

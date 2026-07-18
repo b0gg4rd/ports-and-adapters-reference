@@ -1,0 +1,98 @@
+### Case 01: Success - Should return 201 when creating a "payment"
+POST {{host}}/api/v1/payments
+Content-Type: application/json
+
+{
+  "a1": "payer-773899273774",
+  "a2": "payee-998877665544",
+  "a3": 100.00,
+  "a4": "Test payment",
+  "a5": "2030-12-31T10:00:00"
+}
+
+> {%
+client.test("Should return 201 with a uuid reference header", function() {
+    client.assert(response.status === 201, "Expected status 201 but got " + response.status);
+    var reference = response.headers.valueOf("a0");
+    client.assert(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(reference), "Expected header a0 to be a uuid, got " + reference);
+});
+%}
+
+### Case 02: Failure - Should return 400 when attribute a1 is missing
+POST {{host}}/api/v1/payments
+Content-Type: application/json
+
+{
+  "a2": "payee-998877665544",
+  "a3": 100.00
+}
+
+> {%
+client.test("Should return 400 when a1 is missing", function() {
+    client.assert(response.status === 400, "Expected status 400 but got " + response.status);
+});
+%}
+
+### Case 03: Failure - Should return 400 when attribute a2 is missing
+POST {{host}}/api/v1/payments
+Content-Type: application/json
+
+{
+  "a1": "payer-773899273774",
+  "a3": 100.00
+}
+
+> {%
+client.test("Should return 400 when a2 is missing", function() {
+    client.assert(response.status === 400, "Expected status 400 but got " + response.status);
+});
+%}
+
+### Case 04: Failure - Should return 400 when a1 is empty
+POST {{host}}/api/v1/payments
+Content-Type: application/json
+
+{
+  "a1": "",
+  "a2": "payee-998877665544",
+  "a3": 100.00
+}
+
+> {%
+client.test("Should return 400 when a1 is empty", function() {
+    client.assert(response.status === 400, "Expected status 400 but got " + response.status);
+});
+%}
+
+### Case 05: Failure - Should return 400 when a3 is negative
+POST {{host}}/api/v1/payments
+Content-Type: application/json
+
+{
+  "a1": "payer-773899273774",
+  "a2": "payee-998877665544",
+  "a3": -1.00
+}
+
+> {%
+client.test("Should return 400 when a3 is negative", function() {
+    client.assert(response.status === 400, "Expected status 400 but got " + response.status);
+});
+%}
+
+### Case 06: Failure - Should return 400 when a5 is a past date
+POST {{host}}/api/v1/payments
+Content-Type: application/json
+
+{
+  "a1": "payer-773899273774",
+  "a2": "payee-998877665544",
+  "a3": 100.00,
+  "a5": "2000-01-01T00:00:00"
+}
+
+> {%
+client.test("Should return 400 when a5 is a past date", function() {
+    client.assert(response.status === 400, "Expected status 400 but got " + response.status);
+});
+%}

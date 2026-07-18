@@ -99,6 +99,11 @@
       <artifactId>log4j-slf4j2-impl</artifactId>
       <version>${log4j.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-layout-template-json</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
 
     <!-- Infrastructure Adapter Out -->
     <dependency>
@@ -380,7 +385,7 @@
 
   <profiles>
     <profile>
-      <id>local</id>
+      <id>functional</id>
       <properties>
         <project.build.environment>local</project.build.environment>
       </properties>
@@ -444,9 +449,6 @@
                           <log>Liquibase command 'update' was executed successfully</log>
                           <time>60000</time>
                         </wait>
-                        <log>
-                          <enabled>true</enabled>
-                        </log>
                       </run>
                     </image>
                   </images>
@@ -491,29 +493,34 @@
                   <verbose>true</verbose>
                   <images>
                     <image>
-                      <alias>karatelabs</alias>
-                      <name>karatelabs/karate-chrome:1.5.2</name>
+                      <alias>intellij-http-client</alias>
+                      <name>jetbrains/intellij-http-client</name>
                       <run>
                         <net>${project.artifactId}</net>
                         <containerNamePattern>%a</containerNamePattern>
                         <volumes>
                           <bind>
-                            <volume>${project.build.testOutputDirectory}/functional-tests:/karate</volume>
-                            <volume>${project.build.testOutputDirectory}:/target</volume>
+                            <volume>${project.build.testOutputDirectory}/functional-tests:/workdir</volume>
                           </bind>
                         </volumes>
                         <cmd>
-                          <arg>java</arg>
-                          <arg>-jar</arg>
-                          <arg>karate.jar</arg>
-                          <arg>-f</arg>
-                          <arg>junit:xml,html</arg>
-                          <arg>/karate</arg>
+                          <arg>-LVERBOSE</arg>
+                          <arg>-edocker</arg>
+                          <arg>-vhttp-client.env.json</arg>
+                          <arg>ping.http</arg>
+                          <arg>openapi.http</arg>
+                          <arg>create-payment.http</arg>
+                          <arg>update-payment.http</arg>
+                          <arg>delete-payment.http</arg>
+                          <arg>retrieve-all-payments.http</arg>
                         </cmd>
                         <wait>
-                          <exit>0</exit>
+                          <log>.*RUN SUCCESSFUL</log>
                           <time>30000</time>
                         </wait>
+                        <log>
+                          <enabled>true</enabled>
+                        </log>
                       </run>
                     </image>
                   </images>
@@ -531,6 +538,118 @@
         </plugins>
       </build>
     </profile>
+
+    <profile>
+      <id>local</id>
+      <properties>
+        <project.build.environment>local</project.build.environment>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <configuration>
+              <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
+            </configuration>
+            <executions>
+              <execution>
+                <id>postgresql</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <images>
+                    <image>
+                      <alias>${project.artifactId}-db</alias>
+                      <name>postgres:17.2</name>
+                      <run>
+                        <net>${project.artifactId}</net>
+                        <containerNamePattern>%a</containerNamePattern>
+                        <env>
+                          <POSTGRES_PASSWORD>root</POSTGRES_PASSWORD>
+                        </env>
+                      </run>
+                    </image>
+                  </images>
+                </configuration>
+              </execution>
+              <execution>
+                <id>liquibase</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <images>
+                    <image>
+                      <alias>${project.artifactId}-liquibase</alias>
+                      <name>liquibase:4.33.0-alpine</name>
+                      <run>
+                        <net>${project.artifactId}</net>
+                        <containerNamePattern>%a</containerNamePattern>
+                        <volumes>
+                          <bind>
+                            <volume>${project.build.outputDirectory}/liquibase:/liquibase/changelog</volume>
+                          </bind>
+                        </volumes>
+                        <cmd>
+                          <arg>--defaults-file=/liquibase/changelog/liquibase.properties</arg>
+                          <arg>update</arg>
+                        </cmd>
+                        <wait>
+                          <log>Liquibase command 'update' was executed successfully</log>
+                          <time>60000</time>
+                        </wait>
+                        <log>
+                          <enabled>true</enabled>
+                        </log>
+                      </run>
+                    </image>
+                  </images>
+                </configuration>
+              </execution>
+              <execution>
+                <id>${project.artifactId}</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>build</goal>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <images>
+                    <image>
+                      <alias>${project.artifactId}</alias>
+                      <registry>${docker.image.registry}</registry>
+                      <name>${docker.image.name}</name>
+                      <run>
+                        <net>${project.artifactId}</net>
+                        <containerNamePattern>%a</containerNamePattern>
+                        <ports>
+                          <port>${application.port}:${application.port}</port>
+                        </ports>
+                        <wait>
+                          <log>.*event=app_started.*</log>
+                          <time>30000</time>
+                        </wait>
+                        <log>
+                          <enabled>true</enabled>
+                        </log>
+                      </run>
+                    </image>
+                  </images>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
     <profile>
       <id>prod</id>
       <properties>
