@@ -80,6 +80,9 @@ jobs:
 
       - name: Push Docker image
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: ./mvnw -B -Djansi.force=true -ntp -P prod docker:push
+        run: |
+          ./mvnw -B -Djansi.force=true -ntp -P prod docker:push \
+            -Ddocker.username=${{ github.actor }} \
+            -Ddocker.password=${{ secrets.GITHUB_TOKEN }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
