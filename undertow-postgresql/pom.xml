@@ -383,6 +383,9 @@
                   <name>artifact</name>
                   <descriptor>${project.basedir}/src/main/assembly/native-artifact.xml</descriptor>
                 </assembly>
+                <tags>
+                  <tag>latest</tag>
+                </tags>
               </build>
             </image>
           </images>
@@ -663,6 +666,59 @@
       <properties>
         <project.build.environment>prod</project.build.environment>
       </properties>
+    </profile>
+
+    <profile>
+      <id>render-migrate</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>liquibase-render</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <images>
+                    <image>
+                      <alias>${project.artifactId}-liquibase-render</alias>
+                      <name>liquibase:4.33.0-alpine</name>
+                      <run>
+                        <volumes>
+                          <bind>
+                            <volume>${project.build.outputDirectory}/liquibase:/liquibase/changelog</volume>
+                          </bind>
+                        </volumes>
+                        <env>
+                          <LIQUIBASE_COMMAND_URL>${env.RENDER_DATABASE_URL}</LIQUIBASE_COMMAND_URL>
+                          <LIQUIBASE_COMMAND_USERNAME>${env.RENDER_DATABASE_USERNAME}</LIQUIBASE_COMMAND_USERNAME>
+                          <LIQUIBASE_COMMAND_PASSWORD>${env.RENDER_DATABASE_PASSWORD}</LIQUIBASE_COMMAND_PASSWORD>
+                        </env>
+                        <cmd>
+                          <arg>--defaults-file=/liquibase/changelog/liquibase.properties</arg>
+                          <arg>update</arg>
+                        </cmd>
+                        <wait>
+                          <log>Liquibase command 'update' was executed successfully</log>
+                          <time>60000</time>
+                        </wait>
+                        <log>
+                          <enabled>true</enabled>
+                        </log>
+                      </run>
+                    </image>
+                  </images>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 
