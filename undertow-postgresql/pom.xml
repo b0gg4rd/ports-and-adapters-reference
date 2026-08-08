@@ -678,7 +678,7 @@
             <executions>
               <execution>
                 <id>liquibase-render</id>
-                <phase>generate-resources</phase>
+                <phase>process-resources</phase>
                 <goals>
                   <goal>start</goal>
                 </goals>

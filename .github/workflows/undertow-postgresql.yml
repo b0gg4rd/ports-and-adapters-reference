@@ -105,7 +105,7 @@ jobs:
       - name: Run Liquibase against Render Postgres
         run: |
           chmod +x mvnw
-          ./mvnw -B -Djansi.force=true -ntp -P render-migrate generate-resources
+          ./mvnw -B -Djansi.force=true -ntp -P render-migrate process-resources
         env:
           RENDER_DATABASE_URL: ${{ secrets.RENDER_DATABASE_URL }}
           RENDER_DATABASE_USERNAME: ${{ secrets.RENDER_DATABASE_USERNAME }}
