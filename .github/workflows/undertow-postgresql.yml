@@ -104,8 +104,10 @@ jobs:
 
       - name: Run Liquibase against Postgres
         run: |
+          env
           chmod +x mvnw
-          ./mvnw -B -Djansi.force=true -ntp -P migrate process-resources
+          ./mvnw -B -Djansi.force=true -ntp -P migrate process-resources -X
+          cat target/classes/liquibase/liquibase.properties
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
