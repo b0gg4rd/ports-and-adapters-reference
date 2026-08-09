@@ -669,7 +669,7 @@
     </profile>
 
     <profile>
-      <id>render-migrate</id>
+      <id>migrate</id>
       <build>
         <plugins>
           <plugin>
@@ -677,7 +677,7 @@
             <artifactId>docker-maven-plugin</artifactId>
             <executions>
               <execution>
-                <id>liquibase-render</id>
+                <id>liquibase</id>
                 <phase>process-resources</phase>
                 <goals>
                   <goal>start</goal>
@@ -686,7 +686,7 @@
                   <verbose>true</verbose>
                   <images>
                     <image>
-                      <alias>${project.artifactId}-liquibase-render</alias>
+                      <alias>${project.artifactId}-liquibase</alias>
                       <name>liquibase:4.33.0-alpine</name>
                       <run>
                         <volumes>
