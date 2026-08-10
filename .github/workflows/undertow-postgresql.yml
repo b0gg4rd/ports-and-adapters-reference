@@ -114,8 +114,8 @@ jobs:
 
       - name: Trigger Render deploy with specific image
         env:
-          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+          RENDER_API_KEY: ${{ vars.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ vars.RENDER_SERVICE_ID }}
         run: |
           IMAGE_TAG="$(./mvnw -q -Dexpression=project.version -DforceStdout help:evaluate)"
           echo "Deploying image tag: ${IMAGE_TAG}"
