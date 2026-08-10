@@ -694,6 +694,11 @@
                             <volume>${project.build.outputDirectory}/liquibase:/liquibase/changelog</volume>
                           </bind>
                         </volumes>
+                        <env>
+                          <LIQUIBASE_COMMAND_URL>${env.DATABASE_URL}</LIQUIBASE_COMMAND_URL>
+                          <LIQUIBASE_COMMAND_USERNAME>${env.DATABASE_USERNAME}</LIQUIBASE_COMMAND_USERNAME>
+                          <LIQUIBASE_COMMAND_PASSWORD>${env.DATABASE_PASSWORD}</LIQUIBASE_COMMAND_PASSWORD>
+                        </env>
                         <cmd>
                           <arg>--defaults-file=/liquibase/changelog/liquibase.properties</arg>
                           <arg>update</arg>
