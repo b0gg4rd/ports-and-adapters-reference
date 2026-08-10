@@ -85,7 +85,6 @@ jobs:
     needs: publish
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-24.04
-    environment: prod
     timeout-minutes: 10
     permissions:
       contents: read
