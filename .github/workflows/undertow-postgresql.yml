@@ -107,7 +107,7 @@ jobs:
         run: |
           env
           chmod +x mvnw
-          ./mvnw -B -Djansi.force=true -ntp -P migrate process-resources -X
+          ./mvnw -B -Djansi.force=true -ntp -P migrate process-resources
           cat target/classes/liquibase/liquibase.properties
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
