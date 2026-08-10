@@ -109,9 +109,9 @@ jobs:
           ./mvnw -B -Djansi.force=true -ntp -P migrate process-resources
           cat target/classes/liquibase/liquibase.properties
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
-          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_URL: ${{ vars.DATABASE_URL }}
+          DATABASE_USERNAME: ${{ vars.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ vars.DATABASE_PASSWORD }}
 
       - name: Trigger Render deploy with specific image
         env:
