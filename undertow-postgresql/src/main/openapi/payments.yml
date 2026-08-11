@@ -2,6 +2,8 @@ openapi: 3.0.3
 info:
   title: @project.description@
   version: @project.version@
+servers:
+  - url: /api/v1
 tags:
   - name: Payments
 paths:
