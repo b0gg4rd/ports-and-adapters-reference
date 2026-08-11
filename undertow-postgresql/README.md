@@ -23,16 +23,16 @@ Infrastructure module implementing the **inbound** (Undertow REST) and **outboun
 flowchart LR
   subgraph Infrastructure ["Infrastructure (Adapters)"]
     direction TB
-    A_IN[Inbound Adapters\nCreatePaymentHandler\nRetrieveAllPaymentsHandler\nUpdatePaymentHandler\nDeletePaymentHandler]
-    A_OUT[Outbound Adapters\nPostgresqlPaymentPersistenceAdapter\nSlf4jLoggingAdapter\nDslJsonTransformationAdapter]
-    FW[[Undertow · MyBatis · HikariCP · DSL-JSON · Log4j2]]
+    A_IN[Inbound Adapters\nCreatePaymentHandler]
+    A_OUT[Outbound Adapters\nPostgresqlPaymentPersistenceAdapter]
+    FW[["Undertow"]]
   end
 
   subgraph Application ["Application (Ports)"]
     direction TB
-    P_IN([Port In\nCreatePaymentPortIn\nRetrieveAllPaymentsPortIn\nUpdatePaymentPortIn\nDeletePaymentPortIn])
-    CORE[Core\nPaymentCreator\nPaymentAllRetriever\nPaymentUpdater\nPaymentDeleter]
-    P_OUT([Port Out\nPaymentPersistencePortOut\nLoggingPortOut\nJsonTransformationPortOut])
+    P_IN([Port In\nCreatePaymentPortIn])
+    CORE[Core\nPaymentCreator]
+    P_OUT([Port Out\nPaymentPersistencePortOut])
     J_APP[[Java SDK]]
   end
 
