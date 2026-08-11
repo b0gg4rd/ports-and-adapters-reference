@@ -14,7 +14,11 @@ paths:
       operationId: create-payment
       summary: Create a Payment.
       requestBody:
-        $ref: '#/components/schemas/CreatePaymentRequest'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentRequest'
       responses:
         '201':
           description: Payment created.
@@ -65,7 +69,11 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: '#/components/schemas/UpdatePaymentRequest'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePaymentRequest'
       responses:
         '200':
           description: Payment updated.
