@@ -1,6 +1,7 @@
 {
   "resources": [
-    { "glob": "openapi/**" }
+    { "glob": "openapi/**" },
+    { "glob": "conf/**" }
   ],
   "reflection": [
     {

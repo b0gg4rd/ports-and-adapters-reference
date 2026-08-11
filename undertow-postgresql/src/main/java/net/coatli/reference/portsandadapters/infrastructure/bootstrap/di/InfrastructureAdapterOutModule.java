@@ -10,6 +10,7 @@ import net.coatli.reference.portsandadapters.infrastructure.adapter.out.persiste
 import net.coatli.reference.portsandadapters.infrastructure.adapter.out.persistence.postgresql.mybatis.model.mapper.PostgresqlPaymentPersistenceMapper;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.out.persistence.postgresql.mybatis.model.mapper.PostgresqlPaymentPersistenceMapperImpl;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.out.transformation.avajejsonb.AvajeJsonbTransformationAdapter;
+import net.coatli.reference.portsandadapters.infrastructure.bootstrap.HikariProperties;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import dagger.Module;
@@ -23,8 +24,6 @@ import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 
 import javax.inject.Singleton;
 import javax.sql.DataSource;
-import java.io.IOException;
-import java.util.Properties;
 
 @Module
 public class InfrastructureAdapterOutModule {
@@ -49,19 +48,7 @@ public class InfrastructureAdapterOutModule {
   @Singleton
   public DataSource dataSource() {
 
-    try (final var inputStream = InfrastructureAdapterOutModule.class.getResourceAsStream("/conf/hikari.properties")) {
-
-      final var hikariConfig = new Properties();
-
-      hikariConfig.load(inputStream);
-
-      return new HikariDataSource(new HikariConfig(hikariConfig));
-
-    } catch (final IOException ioException) {
-
-      throw new RuntimeException("Error creating the data source", ioException);
-
-    }
+    return new HikariDataSource(new HikariConfig(HikariProperties.HIKARI_PROPERTIES.getInstance()));
 
   }
 
