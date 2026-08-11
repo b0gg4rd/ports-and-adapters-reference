@@ -17,8 +17,8 @@
             "field": "name"
           },
           "logger": {
-            "$resolver": "logger",
-            "field": "name"
+            "$resolver": "pattern",
+            "pattern": "%c{1}"
           },
           "thread": {
             "$resolver": "thread",
