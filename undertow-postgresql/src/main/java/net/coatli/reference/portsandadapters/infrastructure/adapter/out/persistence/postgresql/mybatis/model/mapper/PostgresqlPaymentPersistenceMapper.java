@@ -15,7 +15,6 @@ public interface PostgresqlPaymentPersistenceMapper {
   @Mapping(target = "amount",        source = "payment.paymentAmount")
   @Mapping(target = "subject",       source = "payment.paymentSubject")
   @Mapping(target = "executionDate", source = "payment.executionDate")
-  @Mapping(target = "status",        expression = "java(payment.getStatus() != null ? payment.getStatus().name() : null)")
   @Mapping(target = "createdAt",     source = "payment.createdAt")
   PaymentRow mappingPayment2PaymentRow(Payment payment);
 
@@ -25,8 +24,15 @@ public interface PostgresqlPaymentPersistenceMapper {
   @Mapping(target = "paymentAmount",    source = "paymentRow.amount")
   @Mapping(target = "paymentSubject",   source = "paymentRow.subject")
   @Mapping(target = "executionDate",    source = "paymentRow.executionDate")
-  @Mapping(target = "status",           expression = "java(paymentRow.status() != null ? net.coatli.reference.portsandadapters.domain.enums.PaymentStatus.valueOf(paymentRow.status()) : null)")
   @Mapping(target = "createdAt",        source = "paymentRow.createdAt")
   Payment mappingPaymentRow2Payment(PaymentRow paymentRow);
+
+  default String mappingPaymentStatus2String(final PaymentStatus paymentStatus) {
+    return paymentStatus != null ? paymentStatus.name() : null;
+  }
+
+  default PaymentStatus mappingString2PaymentStatus(final String status) {
+    return status != null ? PaymentStatus.findByName(status) : null;
+  }
 
 }
