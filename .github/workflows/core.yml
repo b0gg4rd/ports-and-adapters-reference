@@ -44,7 +44,7 @@ jobs:
 
       - name: Test report (detailed check)
         if: always()
-        uses: dorny/test-reporter@v2
+        uses: dorny/test-reporter@v3
         with:
           name: 'Unit Tests'
           report-title: 'Unit Test Results'
@@ -53,7 +53,7 @@ jobs:
 
       - name: JaCoCo coverage report
         if: always()
-        uses: madrapps/jacoco-report@v1.7.1
+        uses: madrapps/jacoco-report@v1.8.0
         with:
           paths: core/target/site/jacoco/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -73,7 +73,7 @@ jobs:
 
       - name: Upload JaCoCo HTML report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: jacoco-report
           path: core/target/site/jacoco/
@@ -81,7 +81,7 @@ jobs:
 
       - name: Upload Surefire reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: surefire-reports
           path: core/target/surefire-reports/
