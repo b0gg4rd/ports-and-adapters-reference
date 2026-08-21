@@ -26,10 +26,10 @@ jobs:
         working-directory: undertow-mongodb
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up GraalVM 25
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'graalvm'
           java-version: '25'
@@ -55,10 +55,10 @@ jobs:
         working-directory: undertow-mongodb
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up GraalVM 25
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'graalvm'
           java-version: '25'
