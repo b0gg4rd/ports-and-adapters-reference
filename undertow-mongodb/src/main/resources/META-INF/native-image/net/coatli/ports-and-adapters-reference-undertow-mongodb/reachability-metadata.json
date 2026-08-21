@@ -1,0 +1,67 @@
+{
+  "resources": [
+    { "glob": "openapi/**" },
+    { "glob": "conf/**" }
+  ],
+  "reflection": [
+    {
+      "type": "java.util.ArrayList",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "net.coatli.reference.portsandadapters.infrastructure.adapter.out.persistence.mongodb.model.PaymentDocument",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.lang.String",
+            "java.lang.String",
+            "java.math.BigDecimal",
+            "java.lang.String",
+            "java.time.LocalDateTime",
+            "java.lang.String",
+            "java.time.LocalDateTime"
+          ]
+        },
+        {
+          "name": "id",
+          "parameterTypes": []
+        },
+        {
+          "name": "payerId",
+          "parameterTypes": []
+        },
+        {
+          "name": "payeeId",
+          "parameterTypes": []
+        },
+        {
+          "name": "amount",
+          "parameterTypes": []
+        },
+        {
+          "name": "subject",
+          "parameterTypes": []
+        },
+        {
+          "name": "executionDate",
+          "parameterTypes": []
+        },
+        {
+          "name": "status",
+          "parameterTypes": []
+        },
+        {
+          "name": "createdAt",
+          "parameterTypes": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+databaseChangeLog:
+  # Setup
+  - include:
+      file: db.changelog-setup-payment.yml
+      relativeToChangelogFile: true

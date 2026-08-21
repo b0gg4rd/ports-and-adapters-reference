@@ -1,0 +1,81 @@
+name: undertow-mongodb
+run-name: ${{ github.actor }} launch the workflow for undertow-mongodb module
+on:
+  push:
+    paths:
+      - 'undertow-mongodb/**'
+      - '.github/workflows/undertow-mongodb.yml'
+  pull_request:
+    paths:
+      - 'undertow-mongodb/**'
+      - '.github/workflows/undertow-mongodb.yml'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: read
+    defaults:
+      run:
+        working-directory: undertow-mongodb
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up GraalVM 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'graalvm'
+          java-version: '25'
+          cache: maven
+
+      - name: Build and functional test
+        run: |
+          chmod +x mvnw
+          ./mvnw -Djansi.force=true -ntp -P functional -U clean verify
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish:
+    name: Build and Push Docker Image
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: write
+    defaults:
+      run:
+        working-directory: undertow-mongodb
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up GraalVM 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'graalvm'
+          java-version: '25'
+          cache: maven
+
+      - name: Build native image and Docker image
+        run: |
+          chmod +x mvnw
+          ./mvnw -B -Djansi.force=true -ntp -P prod -U clean package docker:build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push Docker image
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          ./mvnw -B -Djansi.force=true -ntp -P prod docker:push \
+            -Ddocker.username=${{ github.actor }} \
+            -Ddocker.password=${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

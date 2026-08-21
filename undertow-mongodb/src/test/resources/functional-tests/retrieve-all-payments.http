@@ -1,0 +1,38 @@
+### Setup: ensure at least one payment exists
+POST {{host}}/api/v1/payments
+Content-Type: application/json
+
+{
+  "a1": "payer-773899273774",
+  "a2": "payee-998877665544",
+  "a3": 100.00,
+  "a4": "Test payment",
+  "a5": "2030-12-31T10:00:00"
+}
+
+> {%
+client.test("Setup should return 201", function() {
+    client.assert(response.status === 201, "Expected status 201 but got " + response.status);
+});
+%}
+
+### Case 01: Success - Should return 200 with the list of "payments"
+GET {{host}}/api/v1/payments?page=0&size=10
+
+> {%
+client.test("Should return 200 with an array in a4", function() {
+    client.assert(response.status === 200, "Expected status 200 but got " + response.status);
+    client.assert(Array.isArray(response.body.a4), "Expected response.a4 to be an array");
+});
+%}
+
+### Case 02: Success - Should return 200 with default pagination
+GET {{host}}/api/v1/payments
+
+> {%
+client.test("Should return 200 with default pagination", function() {
+    client.assert(response.status === 200, "Expected status 200 but got " + response.status);
+    client.assert(response.body.a0 === 0, "Expected response.a0 to equal 0, got " + response.body.a0);
+    client.assert(response.body.a1 === 10, "Expected response.a1 to equal 10, got " + response.body.a1);
+});
+%}
