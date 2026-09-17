@@ -57,11 +57,11 @@ paths:
         '500':
           description: Internal server error.
   /payments/{a0}:
-    put:
+    patch:
       tags:
         - Payments
-      operationId: update-payment
-      summary: Update a Payment.
+      operationId: partial-update-payment
+      summary: Partial update a Payment.
       parameters:
         - name: a0
           in: path
@@ -132,13 +132,13 @@ components:
     UpdatePaymentRequest:
       type: object
       properties:
-        a1:
+        a3:
           type: number
           description: Payment Amount.
-        a2:
+        a4:
           type: string
           description: Payment Subject.
-        a3:
+        a5:
           type: string
           format: date-time
           description: Execution Date.

@@ -8,10 +8,10 @@ import java.time.LocalDateTime;
 @Json
 public record UpdatePaymentRequest(
 
-  BigDecimal a1,
+  BigDecimal a3,
 
-  String a2,
+  String a4,
 
-  LocalDateTime a3) {
+  LocalDateTime a5) {
 
 }
