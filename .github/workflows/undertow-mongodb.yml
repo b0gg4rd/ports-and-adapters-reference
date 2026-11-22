@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build and Test
+    name: Build and Test Application
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:
@@ -43,7 +43,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish:
-    name: Build and Push Docker Image
+    name: Build Native Image and Push
     needs: build
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -64,14 +64,14 @@ jobs:
           java-version: '25'
           cache: maven
 
-      - name: Build native image and Docker image
+      - name: Build native image
         run: |
           chmod +x mvnw
           ./mvnw -B -Djansi.force=true -ntp -P prod -U clean package docker:build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Push Docker image
+      - name: Push native image
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
           ./mvnw -B -Djansi.force=true -ntp -P prod docker:push \
