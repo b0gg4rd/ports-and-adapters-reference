@@ -2,7 +2,6 @@ package net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.und
 
 import io.undertow.Handlers;
 import io.undertow.server.HttpHandler;
-import io.undertow.server.handlers.RedirectHandler;
 import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.util.MimeMappings;
 import lombok.experimental.UtilityClass;
@@ -16,10 +15,9 @@ public class OpenApiHandlers {
       .setMimeMappings(MimeMappings.builder().addMapping("yml", "application/yaml").build());
 
   public static final HttpHandler SWAGGER_UI =
-    Handlers
-      .resource(new ClassPathResourceManager(OpenApiHandlers.class.getClassLoader(), "openapi"))
-      .addWelcomeFiles("index.html");
-
-  public static final HttpHandler SWAGGER_UI_REDIRECT = new RedirectHandler("/swagger-ui/");
+    exchange -> {
+      exchange.setRelativePath("/openapi/assets/index.html");
+      OPENAPI.handleRequest(exchange);
+    };
 
 }

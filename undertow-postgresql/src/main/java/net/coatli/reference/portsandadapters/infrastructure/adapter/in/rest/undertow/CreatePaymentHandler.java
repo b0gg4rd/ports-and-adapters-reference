@@ -16,7 +16,7 @@ import javax.inject.Singleton;
 @Singleton
 public class CreatePaymentHandler implements HttpHandler {
 
-  private static final String PAYMENT_REFERENCE_HEADER = "a0";
+  private static final String PAYMENT_REFERENCE_HEADER = "Payment-Reference";
 
   private final CreatePaymentPortIn createPaymentPortIn;
 

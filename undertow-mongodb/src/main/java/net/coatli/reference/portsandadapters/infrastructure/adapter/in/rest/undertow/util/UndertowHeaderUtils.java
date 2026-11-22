@@ -12,21 +12,35 @@ public class UndertowHeaderUtils {
 
   private static final String NO_CACHE = "no-cache";
 
+  private static final String LIST_SEPARATOR = ", ";
+
   public static final String APPLICATION_JSON_UTF8 = "application/json; charset=utf-8";
 
-  public static final String TEXT_PLAIN_UTF8 = "text/plain; charset=utf-8";
-
-  public static String getHeader(final HttpServerExchange httpServerExchange,
-                                 final String             name) {
+  public static String getLastHeaderValue(final HttpServerExchange httpServerExchange,
+                                          final String             name) {
 
     final var headerValues = httpServerExchange
       .getRequestHeaders()
       .get(name);
 
     return
-      null == headerValues
+      (null == headerValues || headerValues.isEmpty())
         ? null
         : headerValues.getLast().trim();
+
+  }
+
+  public static String getCombinedHeaderValue(final HttpServerExchange httpServerExchange,
+                                              final String             name) {
+
+    final var headerValues = httpServerExchange
+      .getRequestHeaders()
+      .get(name);
+
+    return
+      (null == headerValues || headerValues.isEmpty())
+        ? null
+        : String.join(LIST_SEPARATOR, headerValues).trim();
 
   }
 
@@ -34,7 +48,7 @@ public class UndertowHeaderUtils {
                                       final String             name,
                                       final Object             value) {
 
-    putResponseHeader(
+    putRequestHeader(
       httpServerExchange,
       new HttpString(name),
       value);

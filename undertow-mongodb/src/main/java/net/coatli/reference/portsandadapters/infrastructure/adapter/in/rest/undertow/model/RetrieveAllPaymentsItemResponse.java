@@ -2,23 +2,25 @@ package net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.und
 
 import io.avaje.jsonb.Json;
 
+import java.time.LocalDateTime;
+
 @Json
 public record RetrieveAllPaymentsItemResponse(
 
-  String a0,
+  String paymentReference,
 
-  String a1,
+  String payerReference,
 
-  String a2,
+  String payeeReference,
 
-  String a3,
+  String paymentAmount,
 
-  String a4,
+  String paymentSubject,
 
-  String a5,
+  LocalDateTime executionDate,
 
-  String a6,
+  String status,
 
-  String a7) {
+  LocalDateTime createdAt) {
 
 }

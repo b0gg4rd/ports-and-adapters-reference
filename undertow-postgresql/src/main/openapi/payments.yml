@@ -23,14 +23,22 @@ paths:
         '201':
           description: Payment created.
           headers:
-            a0:
+            Payment-Reference:
               description: Payment Reference
               schema:
                 type: string
         '400':
-          description: Bad request.
+          $ref: '#/components/responses/BadRequest'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '500':
-          description: Internal server error.
+          $ref: '#/components/responses/InternalServerError'
     get:
       tags:
         - Payments
@@ -54,16 +62,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RetrieveAllPaymentsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '500':
-          description: Internal server error.
-  /payments/{a0}:
+          $ref: '#/components/responses/InternalServerError'
+  /payments/{paymentReference}:
     patch:
       tags:
         - Payments
       operationId: partial-update-payment
       summary: Partial update a Payment.
       parameters:
-        - name: a0
+        - name: paymentReference
           in: path
           required: true
           schema:
@@ -75,26 +87,29 @@ paths:
             schema:
               $ref: '#/components/schemas/UpdatePaymentRequest'
       responses:
-        '200':
+        '204':
           description: Payment updated.
-          headers:
-            a0:
-              description: Payment Reference
-              schema:
-                type: string
         '400':
-          description: Bad request.
+          $ref: '#/components/responses/BadRequest'
         '404':
-          description: Not found.
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '500':
-          description: Internal server error.
+          $ref: '#/components/responses/InternalServerError'
     delete:
       tags:
         - Payments
       operationId: delete-payment
       summary: Delete a Payment.
       parameters:
-        - name: a0
+        - name: paymentReference
           in: path
           required: true
           schema:
@@ -103,89 +118,149 @@ paths:
         '204':
           description: Payment deleted.
         '400':
-          description: Bad request.
+          $ref: '#/components/responses/BadRequest'
         '404':
-          description: Not found.
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '500':
-          description: Internal server error.
+          $ref: '#/components/responses/InternalServerError'
 components:
+  responses:
+    BadRequest:
+      description: Bad request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    UnprocessableEntity:
+      description: Unprocessable entity.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    MethodNotAllowed:
+      description: Method not allowed.
+      headers:
+        Allow:
+          description: Methods supported by the resource.
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    UnsupportedMediaType:
+      description: Unsupported media type.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    PayloadTooLarge:
+      description: Payload too large.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: Internal server error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        detail:
+          type: string
+          description: Explanation of the error.
     CreatePaymentRequest:
       type: object
       properties:
-        a1:
+        payerReference:
           type: string
           description: Payer Reference.
-        a2:
+        payeeReference:
           type: string
           description: Payee Reference.
-        a3:
+        paymentAmount:
           type: number
           description: Payment Amount.
-        a4:
+        paymentSubject:
           type: string
           description: Payment Subject.
-        a5:
+        executionDate:
           type: string
           format: date-time
           description: Execution Date.
     UpdatePaymentRequest:
       type: object
       properties:
-        a3:
+        paymentAmount:
           type: number
           description: Payment Amount.
-        a4:
+        paymentSubject:
           type: string
           description: Payment Subject.
-        a5:
+        executionDate:
           type: string
           format: date-time
           description: Execution Date.
-    PaymentData:
+    RetrieveAllPaymentsItemResponse:
       type: object
       properties:
-        a0:
+        paymentReference:
           type: string
           description: Payment Reference.
-        a1:
+        payerReference:
           type: string
           description: Payer Reference.
-        a2:
+        payeeReference:
           type: string
           description: Payee Reference.
-        a3:
+        paymentAmount:
           type: string
           description: Payment Amount.
-        a4:
+        paymentSubject:
           type: string
           description: Payment Subject.
-        a5:
+        executionDate:
           type: string
+          format: date-time
           description: Execution Date.
-        a6:
+        status:
           type: string
           description: Status.
-        a7:
+        createdAt:
           type: string
+          format: date-time
           description: Created At.
     RetrieveAllPaymentsResponse:
       type: object
       properties:
-        a0:
+        page:
           type: integer
           description: Page number.
-        a1:
+        size:
           type: integer
           description: Page size.
-        a2:
+        totalElements:
           type: integer
           format: int64
           description: Total elements.
-        a3:
+        totalPages:
           type: integer
           description: Total pages.
-        a4:
+        content:
           type: array
           items:
-            $ref: '#/components/schemas/PaymentData'
+            $ref: '#/components/schemas/RetrieveAllPaymentsItemResponse'

@@ -22,6 +22,7 @@ public class PaymentBootstrap {
         new TraceIdHandler(
           ExceptionConfig.setup(
             RoutesConfig.routes(paymentComponent),
+            paymentComponent.jsonTransformationPortOut(),
             paymentComponent.loggingPortOut(),
             PaymentBootstrap.class),
           paymentComponent.loggingPortOut())));

@@ -42,7 +42,7 @@
     <git.commit.id.maven.plugin.version>9.0.1</git.commit.id.maven.plugin.version>
     <maven.shade.plugin.version>3.6.0</maven.shade.plugin.version>
     <native.maven.plugin.version>0.10.6</native.maven.plugin.version>
-    <docker.maven.plugin.version>0.48.1</docker.maven.plugin.version>
+    <docker.maven.plugin.version>0.49.0</docker.maven.plugin.version>
 
     <ports.and.adapters.reference.core.version>1.0.0-SNAPSHOT</ports.and.adapters.reference.core.version>
     <undertow.core.version>2.4.1.Final</undertow.core.version>
@@ -61,6 +61,7 @@
 
     <postgresql.image.version>postgres:17.10</postgresql.image.version>
     <liquibase.image.version>liquibase:4.33.0-alpine</liquibase.image.version>
+    <intellij.http.client.image.version>jetbrains/intellij-http-client:2026.2.1</intellij.http.client.image.version>
 
     <openapi.build.directory>${project.basedir}/src/main/openapi</openapi.build.directory>
 
@@ -161,21 +162,19 @@
       <resource>
         <directory>${project.build.resourcesDirectory}</directory>
         <filtering>true</filtering>
-        <excludes>
-          <exclude>openapi/swagger-ui/**</exclude>
-        </excludes>
-      </resource>
-      <resource>
-        <directory>${project.build.resourcesDirectory}</directory>
-        <filtering>false</filtering>
-        <includes>
-          <include>openapi/swagger-ui/**</include>
-        </includes>
       </resource>
       <resource>
         <directory>${openapi.build.directory}</directory>
         <targetPath>openapi</targetPath>
         <filtering>true</filtering>
+        <excludes>
+          <exclude>assets/**</exclude>
+        </excludes>
+      </resource>
+      <resource>
+        <directory>${openapi.build.directory}/assets</directory>
+        <targetPath>openapi/assets</targetPath>
+        <filtering>false</filtering>
       </resource>
       <resource>
         <directory>${docker.build.directory}</directory>
@@ -399,7 +398,7 @@
 
   <profiles>
     <profile>
-      <id>functional</id>
+      <id>integration</id>
       <properties>
         <project.build.environment>local</project.build.environment>
       </properties>
@@ -498,7 +497,7 @@
                 </configuration>
               </execution>
               <execution>
-                <id>functional-tests</id>
+                <id>integration-tests</id>
                 <phase>integration-test</phase>
                 <goals>
                   <goal>start</goal>
@@ -508,13 +507,13 @@
                   <images>
                     <image>
                       <alias>intellij-http-client</alias>
-                      <name>jetbrains/intellij-http-client</name>
+                      <name>${intellij.http.client.image.version}</name>
                       <run>
                         <net>${project.artifactId}</net>
                         <containerNamePattern>%a</containerNamePattern>
                         <volumes>
                           <bind>
-                            <volume>${project.build.testOutputDirectory}/functional-tests:/workdir</volume>
+                            <volume>${project.build.testOutputDirectory}/integration-tests:/workdir</volume>
                           </bind>
                         </volumes>
                         <cmd>
@@ -523,14 +522,15 @@
                           <arg>-vhttp-client.env.json</arg>
                           <arg>ping.http</arg>
                           <arg>openapi.http</arg>
+                          <arg>methods.http</arg>
                           <arg>create-payment.http</arg>
                           <arg>update-payment.http</arg>
                           <arg>delete-payment.http</arg>
                           <arg>retrieve-all-payments.http</arg>
                         </cmd>
                         <wait>
-                          <log>.*RUN SUCCESSFUL</log>
-                          <time>30000</time>
+                          <exit>0</exit>
+                          <time>120000</time>
                         </wait>
                         <log>
                           <enabled>true</enabled>

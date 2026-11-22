@@ -1,0 +1,34 @@
+### Case 01: Failure - Should return 405 with Allow for an unsupported method on a payment
+PUT {{host}}/api/v1/payments/17a5d895-2f44-4870-9478-14900cfe75f9
+Content-Type: application/json
+
+{
+  "paymentAmount": 200.00
+}
+
+> {%
+client.test("Should return 405", function() {
+    client.assert(response.status === 405, "Expected status 405 but got " + response.status);
+});
+client.test("Should return Allow with PATCH and DELETE", function() {
+    const allow = response.headers.valueOf("Allow");
+    client.assert(allow !== null && allow.includes("PATCH") && allow.includes("DELETE"), "Unexpected Allow: " + allow);
+});
+client.test("Should return application/json with a detail", function() {
+    client.assert(response.contentType.mimeType === "application/json", "Expected application/json");
+    client.assert(typeof response.body.detail === "string" && response.body.detail.length > 0, "Expected a detail");
+});
+%}
+
+### Case 02: Failure - Should return 405 with Allow for DELETE on the collection
+DELETE {{host}}/api/v1/payments
+
+> {%
+client.test("Should return 405", function() {
+    client.assert(response.status === 405, "Expected status 405 but got " + response.status);
+});
+client.test("Should return Allow with POST and GET", function() {
+    const allow = response.headers.valueOf("Allow");
+    client.assert(allow !== null && allow.includes("POST") && allow.includes("GET"), "Unexpected Allow: " + allow);
+});
+%}

@@ -8,14 +8,14 @@ import java.time.LocalDateTime;
 @Json
 public record CreatePaymentRequest(
 
-  String a1,
+  String payerReference,
 
-  String a2,
+  String payeeReference,
 
-  BigDecimal a3,
+  BigDecimal paymentAmount,
 
-  String a4,
+  String paymentSubject,
 
-  LocalDateTime a5) {
+  LocalDateTime executionDate) {
 
 }

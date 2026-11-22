@@ -9,9 +9,9 @@ import org.mapstruct.Mapping;
 public interface UpdatePaymentHandlerMapper {
 
   @Mapping(target = "paymentReference", source = "paymentReference")
-  @Mapping(target = "paymentAmount",    source = "updatePaymentRequest.a1")
-  @Mapping(target = "paymentSubject",   source = "updatePaymentRequest.a2")
-  @Mapping(target = "executionDate",    source = "updatePaymentRequest.a3")
+  @Mapping(target = "paymentAmount",    source = "updatePaymentRequest.paymentAmount")
+  @Mapping(target = "paymentSubject",   source = "updatePaymentRequest.paymentSubject")
+  @Mapping(target = "executionDate",    source = "updatePaymentRequest.executionDate")
   UpdatePaymentInput mappingUpdate2UpdatePaymentInput(String paymentReference, UpdatePaymentRequest updatePaymentRequest);
 
 }

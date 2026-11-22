@@ -4,7 +4,7 @@ import net.coatli.reference.portsandadapters.application.port.in.DeletePaymentPo
 import net.coatli.reference.portsandadapters.application.port.out.logging.LoggingPortOut;
 import net.coatli.reference.portsandadapters.application.port.out.transformation.JsonTransformationPortOut;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.model.mapper.DeletePaymentHandlerMapper;
-import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.util.UndertowQueryParamUtils;
+import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.util.UndertowPathParamUtils;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.util.UndertowResponseBodyUtils;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -15,7 +15,7 @@ import javax.inject.Singleton;
 @Singleton
 public class DeletePaymentHandler implements HttpHandler {
 
-  private static final String PAYMENT_REFERENCE = "a0";
+  private static final String PAYMENT_REFERENCE = "paymentReference";
 
   private final DeletePaymentPortIn deletePaymentPortIn;
 
@@ -44,7 +44,7 @@ public class DeletePaymentHandler implements HttpHandler {
   @Override
   public void handleRequest(final HttpServerExchange httpServerExchange) throws Exception {
 
-    final var paymentReference = UndertowQueryParamUtils.getQueryParam(httpServerExchange, PAYMENT_REFERENCE);
+    final var paymentReference = UndertowPathParamUtils.getPathParam(httpServerExchange, PAYMENT_REFERENCE);
 
     final var deletePaymentInput = deletePaymentHandlerMapper.mappingPaymentReference2DeletePaymentInput(paymentReference);
 

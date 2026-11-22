@@ -8,11 +8,11 @@ import org.mapstruct.Mapping;
 @Mapper
 public interface CreatePaymentHandlerMapper {
 
-  @Mapping(target = "payerReference",  source = "a1")
-  @Mapping(target = "payeeReference",  source = "a2")
-  @Mapping(target = "paymentAmount",   source = "a3")
-  @Mapping(target = "paymentSubject",  source = "a4")
-  @Mapping(target = "executionDate",   source = "a5")
+  @Mapping(target = "payerReference",  source = "payerReference")
+  @Mapping(target = "payeeReference",  source = "payeeReference")
+  @Mapping(target = "paymentAmount",   source = "paymentAmount")
+  @Mapping(target = "paymentSubject",  source = "paymentSubject")
+  @Mapping(target = "executionDate",   source = "executionDate")
   CreatePaymentInput mappingCreatePaymentRequest2CreatePaymentInput(CreatePaymentRequest createPaymentRequest);
 
 }

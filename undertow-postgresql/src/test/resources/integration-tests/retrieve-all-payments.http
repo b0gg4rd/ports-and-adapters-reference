@@ -1,0 +1,74 @@
+### Setup: ensure at least one payment exists
+POST {{host}}/api/v1/payments
+Content-Type: application/json
+
+{
+  "payerReference": "payer-773899273774",
+  "payeeReference": "payee-998877665544",
+  "paymentAmount": 100.00,
+  "paymentSubject": "Test payment",
+  "executionDate": "2030-12-31T10:00:00"
+}
+
+> {%
+client.test("Setup should return 201", function() {
+    client.assert(response.status === 201, "Expected status 201 but got " + response.status);
+});
+%}
+
+### Case 01: Success - Should return 200 with the list of "payments"
+GET {{host}}/api/v1/payments?page=0&size=10
+
+> {%
+client.test("Should return 200 with an array in content", function() {
+    client.assert(response.status === 200, "Expected status 200 but got " + response.status);
+    client.assert(Array.isArray(response.body.content), "Expected response.content to be an array");
+    client.assert(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?/.test(response.body.content[0].executionDate),"Expected content[0].executionDate to be an ISO-8601 date, got " + response.body.content[0].executionDate);
+});
+%}
+
+### Case 02: Success - Should return 200 with default pagination
+GET {{host}}/api/v1/payments
+
+> {%
+client.test("Should return 200 with default pagination", function() {
+    client.assert(response.status === 200, "Expected status 200 but got " + response.status);
+    client.assert(response.body.page === 0, "Expected response.page to equal 0, got " + response.body.page);
+    client.assert(response.body.size === 10, "Expected response.size to equal 10, got " + response.body.size);
+});
+%}
+
+
+### Case 03: Success - Should return no-store and echo Trace-Id
+GET {{host}}/api/v1/payments
+Trace-Id: trace-from-client-001
+
+> {%
+client.test("Should return Cache-Control no-store", function() {
+    client.assert(response.headers.valueOf("Cache-Control") === "no-store", "Expected no-store");
+});
+client.test("Should echo Trace-Id", function() {
+    client.assert(response.headers.valueOf("Trace-Id") === "trace-from-client-001", "Expected the same trace id");
+});
+%}
+
+### Case 04: Success - Should generate Trace-Id when the client does not send it
+GET {{host}}/api/v1/payments
+
+> {%
+client.test("Should return a generated Trace-Id", function() {
+    client.assert(response.headers.valueOf("Trace-Id") !== null, "Expected Trace-Id header");
+});
+%}
+
+### Case 05: Failure - Should return 400 if page is not numeric
+GET {{host}}/api/v1/payments?page=abc&size=10
+
+> {%
+client.test("Should return 400", function() {
+    client.assert(response.status === 400, "Expected status 400 but got " + response.status);
+});
+client.test("Should return an error body", function() {
+    client.assert(typeof response.body.detail === "string" && response.body.detail.length > 0, "Expected a detail");
+});
+%}

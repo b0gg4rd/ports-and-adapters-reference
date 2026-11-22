@@ -12,9 +12,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TraceIdHandler implements HttpHandler {
 
-  private static final String X_TRACE_ID = "X-T";
+  private static final String TRACE_ID_HEADER = "Trace-Id";
 
-  private static final HttpString X_TRACE_ID_HTTPSTRING = new HttpString(X_TRACE_ID);
+  private static final HttpString TRACE_ID_HEADER_HTTPSTRING = new HttpString(TRACE_ID_HEADER);
 
   private static final String MDC_KEY = "trace-id";
 
@@ -25,12 +25,14 @@ public class TraceIdHandler implements HttpHandler {
   @Override
   public void handleRequest(final HttpServerExchange httpServerExchange) throws Exception {
 
-    var traceId = UndertowHeaderUtils.getHeader(httpServerExchange, X_TRACE_ID);
+    var traceId = UndertowHeaderUtils.getLastHeaderValue(httpServerExchange, TRACE_ID_HEADER);
 
     if (null == traceId || traceId.isBlank()) {
       traceId = UUID.randomUUID().toString();
-      UndertowHeaderUtils.putRequestHeader(httpServerExchange, X_TRACE_ID_HTTPSTRING, traceId);
+      UndertowHeaderUtils.putRequestHeader(httpServerExchange, TRACE_ID_HEADER_HTTPSTRING, traceId);
     }
+
+    UndertowHeaderUtils.putResponseHeader(httpServerExchange, TRACE_ID_HEADER_HTTPSTRING, traceId);
 
     MDC.put(MDC_KEY, traceId);
 

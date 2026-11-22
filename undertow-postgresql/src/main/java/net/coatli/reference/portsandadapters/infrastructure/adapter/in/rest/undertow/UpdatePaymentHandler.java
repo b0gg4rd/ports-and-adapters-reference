@@ -5,7 +5,7 @@ import net.coatli.reference.portsandadapters.application.port.out.logging.Loggin
 import net.coatli.reference.portsandadapters.application.port.out.transformation.JsonTransformationPortOut;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.model.UpdatePaymentRequest;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.model.mapper.UpdatePaymentHandlerMapper;
-import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.util.UndertowQueryParamUtils;
+import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.util.UndertowPathParamUtils;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.util.UndertowRequestBodyUtils;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.util.UndertowResponseBodyUtils;
 import io.undertow.server.HttpHandler;
@@ -17,7 +17,7 @@ import javax.inject.Singleton;
 @Singleton
 public class UpdatePaymentHandler implements HttpHandler {
 
-  private static final String PAYMENT_REFERENCE = "a0";
+  private static final String PAYMENT_REFERENCE = "paymentReference";
 
   private final UpdatePaymentPortIn updatePaymentPortIn;
 
@@ -46,7 +46,7 @@ public class UpdatePaymentHandler implements HttpHandler {
   @Override
   public void handleRequest(final HttpServerExchange httpServerExchange) throws Exception {
 
-    final var paymentReference = UndertowQueryParamUtils.getQueryParam(httpServerExchange, PAYMENT_REFERENCE);
+    final var paymentReference = UndertowPathParamUtils.getPathParam(httpServerExchange, PAYMENT_REFERENCE);
 
     final var updatePaymentRequest = UndertowRequestBodyUtils.deserializeBody(
       httpServerExchange,

@@ -7,11 +7,12 @@ Infrastructure module implementing the **inbound** (Undertow REST) and **outboun
 | Method   | Path                    | Handler                      |
 |----------|-------------------------|------------------------------|
 | `GET`    | `/api/v1/ping`          | `ResponseCodeHandler.HANDLE_200` |
-| `GET`    | `/swagger-ui/`          | `OpenApiHandlers.SWAGGER_UI`  |
+| `GET`    | `/openapi`              | `OpenApiHandlers.SWAGGER_UI`  |
+| `GET`    | `/openapi/*`            | `OpenApiHandlers.OPENAPI` (`payments.yml` and `assets/*`) |
 | `POST`   | `/api/v1/payments`      | `CreatePaymentHandler`       |
 | `GET`    | `/api/v1/payments`      | `RetrieveAllPaymentsHandler` |
-| `PATCH`  | `/api/v1/payments/{a0}` | `UpdatePaymentHandler`       |
-| `DELETE` | `/api/v1/payments/{a0}` | `DeletePaymentHandler`       |
+| `PATCH`  | `/api/v1/payments/{paymentReference}` | `UpdatePaymentHandler`       |
+| `DELETE` | `/api/v1/payments/{paymentReference}` | `DeletePaymentHandler`       |
 
 ---
 
@@ -112,7 +113,7 @@ src/main/java/net/coatli/reference/portsandadapters/
 
 - [Docker](https://docs.docker.com/engine/install/)
 
-### Functional Tests
+### Integration Tests
 
 ```shell
 docker run \
@@ -124,7 +125,7 @@ docker run \
   -v /var/run/docker.sock:/var/run/docker.sock \
   --entrypoint ./mvnw \
   ghcr.io/graalvm/native-image-community:25 \
-  -Djansi.force=true -ntp -P functional -U clean verify
+  -Djansi.force=true -ntp -P integration -U clean verify
 ```
 
 ### Local Run
@@ -140,4 +141,10 @@ docker run \
   --entrypoint ./mvnw \
   ghcr.io/graalvm/native-image-community:25 \
   -Djansi.force=true -ntp -P local -U clean verify
+```
+
+Once the application is up, Swagger UI is available at:
+
+```
+http://localhost:8040/openapi
 ```

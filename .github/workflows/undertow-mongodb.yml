@@ -35,10 +35,10 @@ jobs:
           java-version: '25'
           cache: maven
 
-      - name: Build and functional test
+      - name: Build and integration test
         run: |
           chmod +x mvnw
-          ./mvnw -Djansi.force=true -ntp -P functional -U clean verify
+          ./mvnw -Djansi.force=true -ntp -P integration -U clean verify
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

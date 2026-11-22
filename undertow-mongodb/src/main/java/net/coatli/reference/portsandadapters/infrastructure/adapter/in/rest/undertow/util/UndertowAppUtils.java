@@ -11,6 +11,10 @@ import org.xnio.Options;
 @UtilityClass
 public class UndertowAppUtils {
 
+  public static final long MAX_BODY_SIZE = 1024L * 16;
+
+  private static final long MAX_ENTITY_SIZE = MAX_BODY_SIZE * 4;
+
   private static final String HOST = "host";
 
   private static final String PORT = "port";
@@ -28,6 +32,10 @@ public class UndertowAppUtils {
   private static final int WORKER_THREADS = IO_THREADS * 2;
 
   private static final int BACKLOG_SIZE = 10000;
+
+  private static final int IDLE_TIMEOUT_MILLIS = 60_000;
+
+  private static final int NO_REQUEST_TIMEOUT_MILLIS = 30_000;
 
   public static void buildAndStart(final LoggingPortOut loggingPortOut,
                                    final Class          clazz,
@@ -70,6 +78,9 @@ public class UndertowAppUtils {
         .setServerOption(UndertowOptions.ALWAYS_SET_KEEP_ALIVE, false)
         .setServerOption(UndertowOptions.ALWAYS_SET_DATE, true)
         .setServerOption(UndertowOptions.RECORD_REQUEST_START_TIME, false)
+        .setServerOption(UndertowOptions.MAX_ENTITY_SIZE, MAX_ENTITY_SIZE)
+        .setServerOption(UndertowOptions.IDLE_TIMEOUT, IDLE_TIMEOUT_MILLIS)
+        .setServerOption(UndertowOptions.NO_REQUEST_TIMEOUT, NO_REQUEST_TIMEOUT_MILLIS)
         .setHandler(routes)
         .build();
 

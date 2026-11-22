@@ -1,0 +1,170 @@
+### Case 01: Success - Should return 201 when creating a "payment"
+POST {{host}}/api/v1/payments
+Content-Type: application/json
+
+{
+  "payerReference": "payer-773899273774",
+  "payeeReference": "payee-998877665544",
+  "paymentAmount": 100.00,
+  "paymentSubject": "Test payment",
+  "executionDate": "2030-12-31T10:00:00"
+}
+
+> {%
+client.test("Should return 201 with a uuid reference header", function() {
+    client.assert(response.status === 201, "Expected status 201 but got " + response.status);
+    var reference = response.headers.valueOf("Payment-Reference");
+    client.assert(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(reference), "Expected header Payment-Reference to be a uuid, got " + reference);
+});
+%}
+
+### Case 02: Failure - Should return 422 when attribute payerReference is missing
+POST {{host}}/api/v1/payments
+Content-Type: application/json
+
+{
+  "payeeReference": "payee-998877665544",
+  "paymentAmount": 100.00
+}
+
+> {%
+client.test("Should return 422 when payerReference is missing", function() {
+    client.assert(response.status === 422, "Expected status 422 but got " + response.status);
+});
+%}
+
+### Case 03: Failure - Should return 422 when attribute payeeReference is missing
+POST {{host}}/api/v1/payments
+Content-Type: application/json
+
+{
+  "payerReference": "payer-773899273774",
+  "paymentAmount": 100.00
+}
+
+> {%
+client.test("Should return 422 when payeeReference is missing", function() {
+    client.assert(response.status === 422, "Expected status 422 but got " + response.status);
+});
+%}
+
+### Case 04: Failure - Should return 422 when payerReference is empty
+POST {{host}}/api/v1/payments
+Content-Type: application/json
+
+{
+  "payerReference": "",
+  "payeeReference": "payee-998877665544",
+  "paymentAmount": 100.00
+}
+
+> {%
+client.test("Should return 422 when payerReference is empty", function() {
+    client.assert(response.status === 422, "Expected status 422 but got " + response.status);
+});
+%}
+
+### Case 05: Failure - Should return 422 when paymentAmount is negative
+POST {{host}}/api/v1/payments
+Content-Type: application/json
+
+{
+  "payerReference": "payer-773899273774",
+  "payeeReference": "payee-998877665544",
+  "paymentAmount": -1.00
+}
+
+> {%
+client.test("Should return 422 when paymentAmount is negative", function() {
+    client.assert(response.status === 422, "Expected status 422 but got " + response.status);
+});
+%}
+
+### Case 06: Failure - Should return 422 when executionDate is a past date
+POST {{host}}/api/v1/payments
+Content-Type: application/json
+
+{
+  "payerReference": "payer-773899273774",
+  "payeeReference": "payee-998877665544",
+  "paymentAmount": 100.00,
+  "executionDate": "2000-01-01T00:00:00"
+}
+
+> {%
+client.test("Should return 422 when executionDate is a past date", function() {
+    client.assert(response.status === 422, "Expected status 422 but got " + response.status);
+});
+%}
+
+
+### Case 07: Success - Should accept application/json with charset
+POST {{host}}/api/v1/payments
+Content-Type: application/json; charset=utf-8
+
+{
+  "payerReference": "payer-773899273774",
+  "payeeReference": "payee-998877665544",
+  "paymentAmount": 100.00,
+  "paymentSubject": "Test payment",
+  "executionDate": "2030-12-31T10:00:00"
+}
+
+> {%
+client.test("Should return 201", function() {
+    client.assert(response.status === 201, "Expected status 201 but got " + response.status);
+});
+client.test("Should return Cache-Control no-store and Trace-Id", function() {
+    client.assert(response.headers.valueOf("Cache-Control") === "no-store", "Expected no-store");
+    client.assert(response.headers.valueOf("Trace-Id") !== null, "Expected Trace-Id header");
+});
+%}
+
+### Case 08: Failure - Should return 415 if the Content-Type is not application/json
+POST {{host}}/api/v1/payments
+Content-Type: text/plain
+
+{
+  "payerReference": "payer-773899273774",
+  "payeeReference": "payee-998877665544",
+  "paymentAmount": 100.00,
+  "paymentSubject": "Test payment",
+  "executionDate": "2030-12-31T10:00:00"
+}
+
+> {%
+client.test("Should return 415", function() {
+    client.assert(response.status === 415, "Expected status 415 but got " + response.status);
+});
+client.test("Should return application/json with a detail", function() {
+    client.assert(response.contentType.mimeType === "application/json", "Expected application/json");
+    client.assert(typeof response.body.detail === "string" && response.body.detail.length > 0, "Expected a detail");
+});
+%}
+
+### Case 09: Failure - Should return 413 if the body exceeds the limit
+POST {{host}}/api/v1/payments
+Content-Type: application/json
+
+< ./payload-too-large.json
+
+> {%
+client.test("Should return 413", function() {
+    client.assert(response.status === 413, "Expected status 413 but got " + response.status);
+});
+%}
+
+### Case 10: Failure - Should return 400 when the body is not valid JSON
+POST {{host}}/api/v1/payments
+Content-Type: application/json
+
+{bad
+
+> {%
+client.test("Should return 400", function() {
+    client.assert(response.status === 400, "Expected status 400 but got " + response.status);
+});
+client.test("Should return an error body", function() {
+    client.assert(typeof response.body.detail === "string" && response.body.detail.length > 0, "Expected a detail");
+});
+%}

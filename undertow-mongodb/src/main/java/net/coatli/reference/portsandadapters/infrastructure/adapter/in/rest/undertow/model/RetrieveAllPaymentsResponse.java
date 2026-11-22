@@ -7,14 +7,14 @@ import java.util.List;
 @Json
 public record RetrieveAllPaymentsResponse(
 
-  int a0,
+  int page,
 
-  int a1,
+  int size,
 
-  long a2,
+  long totalElements,
 
-  int a3,
+  int totalPages,
 
-  List<RetrieveAllPaymentsItemResponse> a4) {
+  List<RetrieveAllPaymentsItemResponse> content) {
 
 }

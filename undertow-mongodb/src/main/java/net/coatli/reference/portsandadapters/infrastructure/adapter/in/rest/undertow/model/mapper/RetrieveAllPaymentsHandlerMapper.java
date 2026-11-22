@@ -10,8 +10,6 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Mapper
 public interface RetrieveAllPaymentsHandlerMapper {
@@ -20,31 +18,26 @@ public interface RetrieveAllPaymentsHandlerMapper {
     return new RetrieveAllPaymentsInput(page, size);
   }
 
-  @Mapping(target = "a0", source = "paymentReference")
-  @Mapping(target = "a1", source = "payerReference")
-  @Mapping(target = "a2", source = "payeeReference")
-  @Mapping(target = "a3", source = "paymentAmount", qualifiedByName = "bigDecimalToString")
-  @Mapping(target = "a4", source = "paymentSubject")
-  @Mapping(target = "a5", source = "executionDate", qualifiedByName = "localDateTimeToString")
-  @Mapping(target = "a6", source = "status")
-  @Mapping(target = "a7", source = "createdAt", qualifiedByName = "localDateTimeToString")
+  @Mapping(target = "paymentReference", source = "paymentReference")
+  @Mapping(target = "payerReference", source = "payerReference")
+  @Mapping(target = "payeeReference", source = "payeeReference")
+  @Mapping(target = "paymentAmount", source = "paymentAmount", qualifiedByName = "bigDecimalToString")
+  @Mapping(target = "paymentSubject", source = "paymentSubject")
+  @Mapping(target = "executionDate", source = "executionDate")
+  @Mapping(target = "status", source = "status")
+  @Mapping(target = "createdAt", source = "createdAt")
   RetrieveAllPaymentsItemResponse mappingPayment2PaymentData(Payment payment);
 
-  @Mapping(target = "a0", source = "payments.pagination.page")
-  @Mapping(target = "a1", source = "payments.pagination.size")
-  @Mapping(target = "a2", source = "payments.totalElements")
-  @Mapping(target = "a3", source = "payments.totalPages")
-  @Mapping(target = "a4", source = "payments.content")
+  @Mapping(target = "page", source = "payments.pagination.page")
+  @Mapping(target = "size", source = "payments.pagination.size")
+  @Mapping(target = "totalElements", source = "payments.totalElements")
+  @Mapping(target = "totalPages", source = "payments.totalPages")
+  @Mapping(target = "content", source = "payments.content")
   RetrieveAllPaymentsResponse mappingRetrieveAllPaymentsOutput2RetrieveAllPaymentsResponse(RetrieveAllPaymentsOutput retrieveAllPaymentsOutput);
 
   @Named("bigDecimalToString")
   default String bigDecimalToString(BigDecimal value) {
     return value != null ? value.toPlainString() : null;
-  }
-
-  @Named("localDateTimeToString")
-  default String localDateTimeToString(LocalDateTime value) {
-    return value != null ? value.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) : null;
   }
 
 }

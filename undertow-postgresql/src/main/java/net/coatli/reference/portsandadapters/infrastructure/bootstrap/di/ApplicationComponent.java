@@ -1,6 +1,7 @@
 package net.coatli.reference.portsandadapters.infrastructure.bootstrap.di;
 
 import net.coatli.reference.portsandadapters.application.port.out.logging.LoggingPortOut;
+import net.coatli.reference.portsandadapters.application.port.out.transformation.JsonTransformationPortOut;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.CreatePaymentHandler;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.DeletePaymentHandler;
 import net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.undertow.RetrieveAllPaymentsHandler;
@@ -14,6 +15,8 @@ import javax.inject.Singleton;
 public interface ApplicationComponent {
 
   LoggingPortOut loggingPortOut();
+
+  JsonTransformationPortOut jsonTransformationPortOut();
 
   CreatePaymentHandler createPaymentHandler();
 

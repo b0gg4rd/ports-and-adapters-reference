@@ -1,0 +1,41 @@
+### Case 01: Success - Should return 200 for "GET /openapi"
+GET {{host}}/openapi
+
+> {%
+client.test("Should return 200 with content-type text/html", function() {
+    client.assert(response.status === 200, "Expected status 200 but got " + response.status);
+    client.assert(response.headers.valueOf("Content-Type").includes("text/html"), "Expected Content-Type to contain text/html");
+});
+%}
+
+
+### Case 02: Success - Should return 200 for "GET /openapi/payments.yml"
+GET {{host}}/openapi/payments.yml
+
+> {%
+client.test("Should return 200 with content-type application/yaml", function() {
+    client.assert(response.status === 200, "Expected status 200 but got " + response.status);
+    client.assert(response.headers.valueOf("Content-Type").includes("application/yaml"), "Expected Content-Type to contain application/yaml");
+});
+%}
+
+
+### Case 03: Success - Should return 200 for "GET /openapi/assets/swagger-ui.css"
+GET {{host}}/openapi/assets/swagger-ui.css
+
+> {%
+client.test("Should return 200 with content-type text/css", function() {
+    client.assert(response.status === 200, "Expected status 200 but got " + response.status);
+    client.assert(response.headers.valueOf("Content-Type").includes("text/css"), "Expected Content-Type to contain text/css");
+});
+%}
+
+
+### Case 04: Failure - Should return 404 for "GET /swagger-ui"
+GET {{host}}/swagger-ui
+
+> {%
+client.test("Should return 404", function() {
+    client.assert(response.status === 404, "Expected status 404 but got " + response.status);
+});
+%}

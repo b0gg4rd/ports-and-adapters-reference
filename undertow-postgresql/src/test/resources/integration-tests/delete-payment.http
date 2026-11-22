@@ -3,18 +3,18 @@ POST {{host}}/api/v1/payments
 Content-Type: application/json
 
 {
-  "a1": "payer-773899273774",
-  "a2": "payee-998877665544",
-  "a3": 100.00,
-  "a4": "Test payment",
-  "a5": "2030-12-31T10:00:00"
+  "payerReference": "payer-773899273774",
+  "payeeReference": "payee-998877665544",
+  "paymentAmount": 100.00,
+  "paymentSubject": "Test payment",
+  "executionDate": "2030-12-31T10:00:00"
 }
 
 > {%
 client.test("Setup should return 201", function() {
     client.assert(response.status === 201, "Expected status 201 but got " + response.status);
 });
-client.global.set("paymentReference", response.headers.valueOf("a0"));
+client.global.set("paymentReference", response.headers.valueOf("Payment-Reference"));
 %}
 
 ### Case 01: Success - Should return 204 when deleting a "payment"
@@ -23,6 +23,7 @@ DELETE {{host}}/api/v1/payments/{{paymentReference}}
 > {%
 client.test("Should return 204", function() {
     client.assert(response.status === 204, "Expected status 204 but got " + response.status);
+    client.assert(response.headers.valueOf("Content-Type") === null, "Expected no Content-Type");
 });
 %}
 
@@ -35,11 +36,11 @@ client.test("Should return 404", function() {
 });
 %}
 
-### Case 03: Failure - Should return 400 if the "payment reference" is not a UUID
+### Case 03: Failure - Should return 422 if the "payment reference" is not a UUID
 DELETE {{host}}/api/v1/payments/dummy
 
 > {%
-client.test("Should return 400", function() {
-    client.assert(response.status === 400, "Expected status 400 but got " + response.status);
+client.test("Should return 422", function() {
+    client.assert(response.status === 422, "Expected status 422 but got " + response.status);
 });
 %}

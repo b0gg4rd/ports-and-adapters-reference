@@ -16,33 +16,37 @@ The **core** includes the following _ports in_:
 ## Diagrams
 
 ```mermaid
-flowchart LR
-  subgraph Infrastructure ["Infrastructure (Adapters)"]
-    direction TB
-    A_IN[Adapter In]
-    A_OUT[Adapter Out]
-    FW[[Frameworks / Libraries]]
+flowchart TB
+  
+  subgraph Domain ["Domain (Models and Enums)"]
+    direction LR
+    D_ENT[Models and Enums\nPayment\nPaymentStatus]
+    J_DOM[[Java SDK]]
   end
 
   subgraph Application ["Application (Ports)"]
-    direction TB
+    direction LR
     P_IN([Port In\nCreatePaymentPortIn\nRetrieveAllPaymentsPortIn\nUpdatePaymentPortIn\nDeletePaymentPortIn])
     CORE[Core\nPaymentCreator\nPaymentAllRetriever\nPaymentUpdater\nPaymentDeleter]
     P_OUT([Port Out\nPaymentPersistencePortOut])
     J_APP[[Java SDK]]
   end
 
-  subgraph Domain ["Domain (Models and Enums)"]
-    direction TB
-    D_ENT[Models and Enums\nPayment\nPaymentStatus]
-    J_DOM[[Java SDK]]
+  subgraph Infrastructure ["Infrastructure (Adapters)"]
+    direction LR
+    A_IN[Adapter In]
+    A_OUT[Adapter Out]
+    FW[[Frameworks / Libraries]]
   end
 
+  CORE -->|Uses| D_ENT
   A_IN -->|Uses| P_IN
   P_IN -->|Implemented by| CORE
-  CORE -->|Uses| D_ENT
   CORE -->|Calls| P_OUT
   P_OUT -->|Implemented by| A_OUT
+  
+  Domain ~~~ Application
+  Application ~~~ Infrastructure
 
   classDef domain fill:#d4edda,stroke:#28a745,stroke-width:2px,color:#155724;
   classDef app fill:#cce5ff,stroke:#007bff,stroke-width:2px,color:#004085;

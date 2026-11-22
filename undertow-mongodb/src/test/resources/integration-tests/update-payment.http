@@ -1,0 +1,90 @@
+### Setup: create a payment to update
+POST {{host}}/api/v1/payments
+Content-Type: application/json
+
+{
+  "payerReference": "payer-773899273774",
+  "payeeReference": "payee-998877665544",
+  "paymentAmount": 100.00,
+  "paymentSubject": "Test payment",
+  "executionDate": "2030-12-31T10:00:00"
+}
+
+> {%
+client.test("Setup should return 201", function() {
+    client.assert(response.status === 201, "Expected status 201 but got " + response.status);
+});
+client.global.set("paymentReference", response.headers.valueOf("Payment-Reference"));
+%}
+
+### Case 01: Success - Should return 204 when updating a "payment"
+PATCH {{host}}/api/v1/payments/{{paymentReference}}
+Content-Type: application/json
+
+{
+  "paymentAmount": 200.00,
+  "paymentSubject": "Updated subject",
+  "executionDate": "2030-12-31T12:00:00"
+}
+
+> {%
+client.test("Should return 204", function() {
+    client.assert(response.status === 204, "Expected status 204 but got " + response.status);
+    client.assert(response.headers.valueOf("Content-Type") === null, "Expected no Content-Type");
+});
+%}
+
+### Case 02: Failure - Should return 404 if the "payment" does not exist
+PATCH {{host}}/api/v1/payments/17a5d895-2f44-4870-9478-14900cfe75f9
+Content-Type: application/json
+
+{
+  "paymentAmount": 200.00
+}
+
+> {%
+client.test("Should return 404", function() {
+    client.assert(response.status === 404, "Expected status 404 but got " + response.status);
+});
+%}
+
+### Case 03: Failure - Should return 422 if paymentAmount is negative
+PATCH {{host}}/api/v1/payments/{{paymentReference}}
+Content-Type: application/json
+
+{
+  "paymentAmount": -50.00
+}
+
+> {%
+client.test("Should return 422", function() {
+    client.assert(response.status === 422, "Expected status 422 but got " + response.status);
+});
+%}
+
+
+### Case 04: Failure - Should return 415 if the Content-Type is not application/json
+PATCH {{host}}/api/v1/payments/{{paymentReference}}
+Content-Type: text/plain
+
+{
+  "paymentAmount": 200.00
+}
+
+> {%
+client.test("Should return 415", function() {
+    client.assert(response.status === 415, "Expected status 415 but got " + response.status);
+});
+%}
+
+### Case 05: Failure - Should return 413 if the body exceeds the limit
+PATCH {{host}}/api/v1/payments/{{paymentReference}}
+Content-Type: application/json
+
+< ./payload-too-large.json
+
+> {%
+client.test("Should return 413", function() {
+    client.assert(response.status === 413, "Expected status 413 but got " + response.status);
+});
+%}
