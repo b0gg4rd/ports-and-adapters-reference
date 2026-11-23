@@ -201,7 +201,8 @@ components:
         executionDate:
           type: string
           format: date-time
-          description: Execution Date.
+          description: Execution Date. RFC 3339 date-time with a mandatory offset (e.g. 'Z' or '-06:00'); it is normalized to UTC.
+          example: "2030-12-31T10:00:00Z"
     UpdatePaymentRequest:
       type: object
       properties:
@@ -214,7 +215,8 @@ components:
         executionDate:
           type: string
           format: date-time
-          description: Execution Date.
+          description: Execution Date. RFC 3339 date-time with a mandatory offset (e.g. 'Z' or '-06:00'); it is normalized to UTC.
+          example: "2030-12-31T10:00:00Z"
     RetrieveAllPaymentsItemResponse:
       type: object
       properties:
@@ -236,14 +238,16 @@ components:
         executionDate:
           type: string
           format: date-time
-          description: Execution Date.
+          description: Execution Date. RFC 3339 date-time in UTC.
+          example: "2030-12-31T10:00:00Z"
         status:
           type: string
           description: Status.
         createdAt:
           type: string
           format: date-time
-          description: Created At.
+          description: Created At. RFC 3339 date-time in UTC.
+          example: "2026-11-22T19:24:09.556Z"
     RetrieveAllPaymentsResponse:
       type: object
       properties:

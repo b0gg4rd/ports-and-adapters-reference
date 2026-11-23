@@ -7,7 +7,7 @@ Content-Type: application/json
   "payeeReference": "payee-998877665544",
   "paymentAmount": 100.00,
   "paymentSubject": "Test payment",
-  "executionDate": "2030-12-31T10:00:00"
+  "executionDate": "2030-12-31T10:00:00Z"
 }
 
 > {%
@@ -23,7 +23,9 @@ GET {{host}}/api/v1/payments?page=0&size=10
 client.test("Should return 200 with an array in content", function() {
     client.assert(response.status === 200, "Expected status 200 but got " + response.status);
     client.assert(Array.isArray(response.body.content), "Expected response.content to be an array");
-    client.assert(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?/.test(response.body.content[0].executionDate),"Expected content[0].executionDate to be an ISO-8601 date, got " + response.body.content[0].executionDate);
+    const rfc3339Utc = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
+    client.assert(rfc3339Utc.test(response.body.content[0].executionDate), "Expected content[0].executionDate to be an RFC 3339 UTC date-time, got " + response.body.content[0].executionDate);
+    client.assert(rfc3339Utc.test(response.body.content[0].createdAt), "Expected content[0].createdAt to be an RFC 3339 UTC date-time, got " + response.body.content[0].createdAt);
 });
 %}
 

@@ -21,7 +21,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Duration;
+import java.time.Instant;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentCreatorTest {
@@ -66,7 +67,7 @@ class PaymentCreatorTest {
   @Test
   @DisplayName("Case 02: Success - Given future executionDate, When execute, Then preserves date and returns output")
   void case02() {
-    var futureDate = LocalDateTime.now().plusDays(1);
+    var futureDate = Instant.now().plus(Duration.ofDays(1));
     var input = new CreatePaymentInput("payer-1", "payee-1", new BigDecimal("100.00"), "subject",
       futureDate);
     var captor = ArgumentCaptor.forClass(Payment.class);
@@ -89,7 +90,7 @@ class PaymentCreatorTest {
   @DisplayName("Case 04: Failure - Given null payerReference, When execute, Then throws PaymentInputException")
   void case04() {
     var input = new CreatePaymentInput(null, "payee-1", new BigDecimal("100.00"), "subject",
-      LocalDateTime.now().plusDays(1));
+      Instant.now().plus(Duration.ofDays(1)));
     Assertions.assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
@@ -97,7 +98,7 @@ class PaymentCreatorTest {
   @DisplayName("Case 05: Failure - Given blank payerReference, When execute, Then throws PaymentInputException")
   void case05() {
     var input = new CreatePaymentInput("   ", "payee-1", new BigDecimal("100.00"), "subject",
-      LocalDateTime.now().plusDays(1));
+      Instant.now().plus(Duration.ofDays(1)));
     Assertions.assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
@@ -105,7 +106,7 @@ class PaymentCreatorTest {
   @DisplayName("Case 06: Failure - Given null payeeReference, When execute, Then throws PaymentInputException")
   void case06() {
     var input = new CreatePaymentInput("payer-1", null, new BigDecimal("100.00"), "subject",
-      LocalDateTime.now().plusDays(1));
+      Instant.now().plus(Duration.ofDays(1)));
     Assertions.assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
@@ -113,7 +114,7 @@ class PaymentCreatorTest {
   @DisplayName("Case 07: Failure - Given blank payeeReference, When execute, Then throws PaymentInputException")
   void case07() {
     var input = new CreatePaymentInput("payer-1", "   ", new BigDecimal("100.00"), "subject",
-      LocalDateTime.now().plusDays(1));
+      Instant.now().plus(Duration.ofDays(1)));
     Assertions.assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
@@ -121,7 +122,7 @@ class PaymentCreatorTest {
   @DisplayName("Case 08: Failure - Given null paymentAmount, When execute, Then throws PaymentInputException")
   void case08() {
     var input = new CreatePaymentInput("payer-1", "payee-1", null, "subject",
-      LocalDateTime.now().plusDays(1));
+      Instant.now().plus(Duration.ofDays(1)));
     Assertions.assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
@@ -129,7 +130,7 @@ class PaymentCreatorTest {
   @DisplayName("Case 09: Failure - Given zero paymentAmount, When execute, Then throws PaymentInputException")
   void case09() {
     var input = new CreatePaymentInput("payer-1", "payee-1", BigDecimal.ZERO, "subject",
-      LocalDateTime.now().plusDays(1));
+      Instant.now().plus(Duration.ofDays(1)));
     Assertions.assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
@@ -137,7 +138,7 @@ class PaymentCreatorTest {
   @DisplayName("Case 10: Failure - Given negative paymentAmount, When execute, Then throws PaymentInputException")
   void case10() {
     var input = new CreatePaymentInput("payer-1", "payee-1", new BigDecimal("-50.00"), "subject",
-      LocalDateTime.now().plusDays(1));
+      Instant.now().plus(Duration.ofDays(1)));
     Assertions.assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
@@ -145,7 +146,7 @@ class PaymentCreatorTest {
   @DisplayName("Case 11: Failure - Given past executionDate, When execute, Then throws PaymentInputException")
   void case11() {
     var input = new CreatePaymentInput("payer-1", "payee-1", new BigDecimal("100.00"), "subject",
-      LocalDateTime.now().minusDays(1));
+      Instant.now().minus(Duration.ofDays(1)));
     Assertions.assertThrows(PaymentInputException.class, () -> paymentCreator.execute(input));
   }
 
@@ -153,7 +154,7 @@ class PaymentCreatorTest {
   @DisplayName("Case 12: Failure - Given persistence returns null, When execute, Then throws IllegalStateException")
   void case12() {
     var input = new CreatePaymentInput("payer-1", "payee-1", new BigDecimal("100.00"), "subject",
-      LocalDateTime.now().plusDays(1));
+      Instant.now().plus(Duration.ofDays(1)));
     Mockito.when(paymentPersistencePortOut.create(ArgumentMatchers.any(Payment.class))).thenReturn(null);
 
     Assertions.assertThrows(IllegalStateException.class, () -> paymentCreator.execute(input));

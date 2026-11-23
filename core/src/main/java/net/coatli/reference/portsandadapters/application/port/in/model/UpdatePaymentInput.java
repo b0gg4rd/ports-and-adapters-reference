@@ -1,7 +1,7 @@
 package net.coatli.reference.portsandadapters.application.port.in.model;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public record UpdatePaymentInput(
 
@@ -11,6 +11,6 @@ public record UpdatePaymentInput(
 
   String paymentSubject,
 
-  LocalDateTime executionDate) {
+  Instant executionDate) {
 
 }

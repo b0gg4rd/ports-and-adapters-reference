@@ -7,7 +7,7 @@ Content-Type: application/json
   "payeeReference": "payee-998877665544",
   "paymentAmount": 100.00,
   "paymentSubject": "Test payment",
-  "executionDate": "2030-12-31T10:00:00"
+  "executionDate": "2030-12-31T10:00:00Z"
 }
 
 > {%

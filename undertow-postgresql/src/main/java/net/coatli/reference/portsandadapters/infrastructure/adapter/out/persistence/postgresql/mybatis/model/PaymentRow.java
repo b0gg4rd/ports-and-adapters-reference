@@ -3,7 +3,7 @@ package net.coatli.reference.portsandadapters.infrastructure.adapter.out.persist
 import io.avaje.jsonb.Json;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Json
 public record PaymentRow(
@@ -18,10 +18,10 @@ public record PaymentRow(
 
   String subject,
 
-  LocalDateTime executionDate,
+  Instant executionDate,
 
   String status,
 
-  LocalDateTime createdAt) {
+  Instant createdAt) {
 
 }

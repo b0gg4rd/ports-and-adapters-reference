@@ -11,7 +11,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Mapper
@@ -31,9 +31,9 @@ public interface MyBatisPaymentMapper {
     @Arg(column = "payee_id",       name = "payeeId",       javaType = String.class),
     @Arg(column = "amount",         name = "amount",        javaType = BigDecimal.class),
     @Arg(column = "subject",        name = "subject",       javaType = String.class),
-    @Arg(column = "execution_date", name = "executionDate", javaType = LocalDateTime.class),
+    @Arg(column = "execution_date", name = "executionDate", javaType = Instant.class),
     @Arg(column = "status",         name = "status",        javaType = String.class),
-    @Arg(column = "created_at",     name = "createdAt",     javaType = LocalDateTime.class)
+    @Arg(column = "created_at",     name = "createdAt",     javaType = Instant.class)
   })
   @Select("""
     SELECT id, payer_id, payee_id, amount, subject, execution_date, status, created_at
@@ -52,9 +52,9 @@ public interface MyBatisPaymentMapper {
     @Arg(column = "payee_id",       name = "payeeId",       javaType = String.class),
     @Arg(column = "amount",         name = "amount",        javaType = BigDecimal.class),
     @Arg(column = "subject",        name = "subject",       javaType = String.class),
-    @Arg(column = "execution_date", name = "executionDate", javaType = LocalDateTime.class),
+    @Arg(column = "execution_date", name = "executionDate", javaType = Instant.class),
     @Arg(column = "status",         name = "status",        javaType = String.class),
-    @Arg(column = "created_at",     name = "createdAt",     javaType = LocalDateTime.class)
+    @Arg(column = "created_at",     name = "createdAt",     javaType = Instant.class)
   })
   @Select("""
     SELECT id, payer_id, payee_id, amount, subject, execution_date, status, created_at

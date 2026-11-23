@@ -5,7 +5,7 @@ import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Json
 public record PaymentDocument(
@@ -26,12 +26,12 @@ public record PaymentDocument(
   String subject,
 
   @BsonProperty("execution_date")
-  LocalDateTime executionDate,
+  Instant executionDate,
 
   @BsonProperty("status")
   String status,
 
   @BsonProperty("created_at")
-  LocalDateTime createdAt) {
+  Instant createdAt) {
 
 }

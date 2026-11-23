@@ -22,7 +22,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -113,7 +114,7 @@ class PaymentUpdaterTest {
   @DisplayName("Case 05: Success - Given future executionDate, When execute, Then updates the execution date")
   void case05() {
     var uuid = "550e8400-e29b-41d4-a716-446655440000";
-    var futureDate = LocalDateTime.now().plusDays(1);
+    var futureDate = Instant.now().plus(Duration.ofDays(1));
     var input = new UpdatePaymentInput(uuid, null, null, futureDate);
     var payment = new Payment().setPaymentReference(uuid).setStatus(PaymentStatus.PENDING);
     Mockito.when(paymentPersistencePortOut.findByPaymentReference(uuid))
@@ -148,7 +149,7 @@ class PaymentUpdaterTest {
   @Test
   @DisplayName("Case 09: Failure - Given past executionDate, When execute, Then throws PaymentInputException")
   void case09() {
-    var input = new UpdatePaymentInput("payee-1", null, null, LocalDateTime.now().minusDays(1));
+    var input = new UpdatePaymentInput("payee-1", null, null, Instant.now().minus(Duration.ofDays(1)));
     Assertions.assertThrows(PaymentInputException.class, () -> paymentUpdater.execute(input));
   }
 

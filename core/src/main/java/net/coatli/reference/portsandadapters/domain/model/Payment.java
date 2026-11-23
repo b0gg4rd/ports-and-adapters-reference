@@ -7,7 +7,7 @@ import lombok.experimental.Accessors;
 import net.coatli.reference.portsandadapters.domain.enums.PaymentStatus;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -45,7 +45,7 @@ public class Payment {
   /**
    * Date of execution.
    */
-  private LocalDateTime executionDate;
+  private Instant executionDate;
 
   /**
    * Status of the payment.
@@ -55,6 +55,6 @@ public class Payment {
   /**
    * Date time of the creation.
    */
-  private LocalDateTime createdAt;
+  private Instant createdAt;
 
 }

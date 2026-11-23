@@ -12,7 +12,7 @@ import net.coatli.reference.portsandadapters.domain.enums.PaymentStatus;
 import net.coatli.reference.portsandadapters.domain.model.Payment;
 import lombok.RequiredArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -65,10 +65,10 @@ public class PaymentCreator implements CreatePaymentPortIn {
 
     payment.setPaymentReference(UUID.randomUUID().toString());
     payment.setStatus(PaymentStatus.PENDING);
-    payment.setCreatedAt(LocalDateTime.now());
+    payment.setCreatedAt(Instant.now());
 
     if (null == payment.getExecutionDate()) {
-      payment.setExecutionDate(LocalDateTime.now());
+      payment.setExecutionDate(Instant.now());
     }
 
     return payment;

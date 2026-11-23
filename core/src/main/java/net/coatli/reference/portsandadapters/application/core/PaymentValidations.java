@@ -4,7 +4,7 @@ import net.coatli.reference.portsandadapters.application.port.in.exception.Payme
 import lombok.experimental.UtilityClass;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @UtilityClass
@@ -22,9 +22,9 @@ public class PaymentValidations {
 
   }
 
-  public void requireFutureOrAbsentDate(final LocalDateTime date) {
+  public void requireFutureOrAbsentDate(final Instant date) {
 
-    if (null != date && date.isBefore(LocalDateTime.now())) {
+    if (null != date && date.isBefore(Instant.now())) {
       throw new PaymentInputException("The value for 'executionDate' must not be a past date.");
     }
 

@@ -7,7 +7,7 @@ Content-Type: application/json
   "payeeReference": "payee-998877665544",
   "paymentAmount": 100.00,
   "paymentSubject": "Test payment",
-  "executionDate": "2030-12-31T10:00:00"
+  "executionDate": "2030-12-31T10:00:00Z"
 }
 
 > {%
@@ -24,7 +24,7 @@ Content-Type: application/json
 {
   "paymentAmount": 200.00,
   "paymentSubject": "Updated subject",
-  "executionDate": "2030-12-31T12:00:00"
+  "executionDate": "2030-12-31T12:00:00Z"
 }
 
 > {%
@@ -86,5 +86,21 @@ Content-Type: application/json
 > {%
 client.test("Should return 413", function() {
     client.assert(response.status === 413, "Expected status 413 but got " + response.status);
+});
+%}
+
+### Case 06: Success - Should return 204 when executionDate is an RFC 3339 UTC date-time with milliseconds
+PATCH {{host}}/api/v1/payments/{{paymentReference}}
+Content-Type: application/json
+
+{
+  "paymentAmount": 200.00,
+  "paymentSubject": "Updated subject",
+  "executionDate": "2030-12-31T12:00:00.556Z"
+}
+
+> {%
+client.test("Should return 204", function() {
+    client.assert(response.status === 204, "Expected status 204 but got " + response.status);
 });
 %}

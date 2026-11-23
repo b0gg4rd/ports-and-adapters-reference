@@ -2,7 +2,7 @@ package net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.und
 
 import io.avaje.jsonb.Json;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Json
 public record RetrieveAllPaymentsItemResponse(
@@ -17,10 +17,10 @@ public record RetrieveAllPaymentsItemResponse(
 
   String paymentSubject,
 
-  LocalDateTime executionDate,
+  Instant executionDate,
 
   String status,
 
-  LocalDateTime createdAt) {
+  Instant createdAt) {
 
 }

@@ -3,7 +3,7 @@ package net.coatli.reference.portsandadapters.infrastructure.adapter.in.rest.und
 import io.avaje.jsonb.Json;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Json
 public record UpdatePaymentRequest(
@@ -12,6 +12,6 @@ public record UpdatePaymentRequest(
 
   String paymentSubject,
 
-  LocalDateTime executionDate) {
+  Instant executionDate) {
 
 }

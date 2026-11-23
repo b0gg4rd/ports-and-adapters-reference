@@ -86,9 +86,9 @@
             "java.lang.String",
             "java.math.BigDecimal",
             "java.lang.String",
-            "java.time.LocalDateTime",
+            "java.time.Instant",
             "java.lang.String",
-            "java.time.LocalDateTime"
+            "java.time.Instant"
           ]
         },
         {

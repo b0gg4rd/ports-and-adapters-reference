@@ -7,7 +7,7 @@ Content-Type: application/json
   "payeeReference": "payee-998877665544",
   "paymentAmount": 100.00,
   "paymentSubject": "Test payment",
-  "executionDate": "2030-12-31T10:00:00"
+  "executionDate": "2030-12-31T10:00:00Z"
 }
 
 > {%
@@ -88,7 +88,7 @@ Content-Type: application/json
   "payerReference": "payer-773899273774",
   "payeeReference": "payee-998877665544",
   "paymentAmount": 100.00,
-  "executionDate": "2000-01-01T00:00:00"
+  "executionDate": "2000-01-01T00:00:00Z"
 }
 
 > {%
@@ -107,7 +107,7 @@ Content-Type: application/json; charset=utf-8
   "payeeReference": "payee-998877665544",
   "paymentAmount": 100.00,
   "paymentSubject": "Test payment",
-  "executionDate": "2030-12-31T10:00:00"
+  "executionDate": "2030-12-31T10:00:00Z"
 }
 
 > {%
@@ -129,7 +129,7 @@ Content-Type: text/plain
   "payeeReference": "payee-998877665544",
   "paymentAmount": 100.00,
   "paymentSubject": "Test payment",
-  "executionDate": "2030-12-31T10:00:00"
+  "executionDate": "2030-12-31T10:00:00Z"
 }
 
 > {%
@@ -166,5 +166,41 @@ client.test("Should return 400", function() {
 });
 client.test("Should return an error body", function() {
     client.assert(typeof response.body.detail === "string" && response.body.detail.length > 0, "Expected a detail");
+});
+%}
+
+### Case 11: Success - Should return 201 when executionDate has a numeric offset
+POST {{host}}/api/v1/payments
+Content-Type: application/json
+
+{
+  "payerReference": "payer-773899273774",
+  "payeeReference": "payee-998877665544",
+  "paymentAmount": 100.00,
+  "paymentSubject": "Test payment",
+  "executionDate": "2030-12-31T10:00:00-06:00"
+}
+
+> {%
+client.test("Should return 201", function() {
+    client.assert(response.status === 201, "Expected status 201 but got " + response.status);
+});
+%}
+
+### Case 12: Failure - Should return 400 when executionDate has no offset
+POST {{host}}/api/v1/payments
+Content-Type: application/json
+
+{
+  "payerReference": "payer-773899273774",
+  "payeeReference": "payee-998877665544",
+  "paymentAmount": 100.00,
+  "paymentSubject": "Test payment",
+  "executionDate": "2030-12-31T10:00:00"
+}
+
+> {%
+client.test("Should return 400", function() {
+    client.assert(response.status === 400, "Expected status 400 but got " + response.status);
 });
 %}

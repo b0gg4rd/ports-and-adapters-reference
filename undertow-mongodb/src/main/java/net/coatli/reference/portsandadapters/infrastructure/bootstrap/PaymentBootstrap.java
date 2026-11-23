@@ -8,10 +8,15 @@ import net.coatli.reference.portsandadapters.infrastructure.bootstrap.di.DaggerA
 import io.undertow.server.handlers.BlockingHandler;
 import lombok.experimental.UtilityClass;
 
+import java.time.ZoneOffset;
+import java.util.TimeZone;
+
 @UtilityClass
 public class PaymentBootstrap {
 
   static void main(final String[] args) throws Exception {
+
+    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
 
     final var paymentComponent = DaggerApplicationComponent.create();
 
